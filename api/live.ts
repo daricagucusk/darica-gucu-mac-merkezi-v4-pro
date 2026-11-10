@@ -1,6 +1,6 @@
-import { PATH_LIVE, PATH_STATUS, readJSON } from './_lib/blob-store';
-import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http';
-import type { PublishedSnapshot } from '../src/ingestion/publish';
+import { PATH_LIVE, PATH_STATUS, readJSON } from './_lib/blob-store.js';
+import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
+import type { PublishedSnapshot } from '../src/ingestion/publish.js';
 
 interface SourceStatus {
   state: string;

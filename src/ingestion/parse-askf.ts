@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
 import { readXls } from 'xls-reader';
-import { canonicalTeamId, normalizeTeamName } from '../domain/identity';
+import { canonicalTeamId, normalizeTeamName } from '../domain/identity.js';
 
 export interface AskfRow {
   sheet: string;

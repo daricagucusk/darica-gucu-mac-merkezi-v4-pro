@@ -1,6 +1,6 @@
-import { diffFixtures, type FixtureChange } from '../domain/changes';
-import { evaluateSnapshot, type SnapshotDecision } from '../domain/snapshot';
-import type { ParsedAskfFixture, ParsedAskfSchedule } from './parse-askf';
+import { diffFixtures, type FixtureChange } from '../domain/changes.js';
+import { evaluateSnapshot, type SnapshotDecision } from '../domain/snapshot.js';
+import type { ParsedAskfFixture, ParsedAskfSchedule } from './parse-askf.js';
 
 export interface PreviousPublishedSnapshot {
   sourceFile: string;

@@ -1,14 +1,14 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { downloadLatestAskfFile } from './_lib/askf-source';
-import { PATH_LIVE, PATH_STATUS, readJSON, writeBytes, writeJSON } from './_lib/blob-store';
-import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http';
-import { parseAskfWorkbook } from '../src/ingestion/parse-askf';
+import { downloadLatestAskfFile } from './_lib/askf-source.js';
+import { PATH_LIVE, PATH_STATUS, readJSON, writeBytes, writeJSON } from './_lib/blob-store.js';
+import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
+import { parseAskfWorkbook } from '../src/ingestion/parse-askf.js';
 import {
   publishVerifiedSnapshot,
   type PreviousPublishedSnapshot,
   type PublishedSnapshot,
   type SnapshotStorage,
-} from '../src/ingestion/publish';
+} from '../src/ingestion/publish.js';
 
 export const config = { maxDuration: 60 };
 

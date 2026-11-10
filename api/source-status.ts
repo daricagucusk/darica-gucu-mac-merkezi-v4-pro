@@ -1,5 +1,5 @@
-import { PATH_STATUS, readJSON } from './_lib/blob-store';
-import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http';
+import { PATH_STATUS, readJSON } from './_lib/blob-store.js';
+import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
 
 interface SourceStatus {
   schema: number;

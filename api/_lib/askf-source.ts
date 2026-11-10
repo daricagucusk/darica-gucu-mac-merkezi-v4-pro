@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import chromium from '@sparticuz/chromium';
 import { chromium as playwrightChromium } from 'playwright-core';
-import { selectLatestAskfFile } from '../../src/ingestion/source-selection';
+import { selectLatestAskfFile } from '../../src/ingestion/source-selection.js';
 
 const SOURCE_URL = 'https://www.kaskf.org/HaftalikProgram';
 
