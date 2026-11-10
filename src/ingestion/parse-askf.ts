@@ -150,7 +150,7 @@ export function parseAskfRows(rows: AskfRow[], sourceFile: string): ParsedAskfSc
 
     const date = isoDate(currentDate);
     const fixtureSeason = seasonFor(currentDate);
-    const id = [fixtureSeason, group, homeId, awayId].join('|');
+    const id = [fixtureSeason, group, homeId, awayId, date, time, fold(field)].join('|');
     matches.push({
       id, group, date, time, home, away, homeId, awayId,
       field, venue: field, status: statusFor(row),

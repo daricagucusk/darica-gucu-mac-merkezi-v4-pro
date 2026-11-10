@@ -24,6 +24,7 @@
 - [x] Create `DESIGN.md`, design specification, README, and ignore rules.
 - [x] Create private GitHub repository and `develop/v4-pro` branch.
 - [x] Create separate Vercel project with SSO protection and Node 24.
+- [x] Configure Vercel functions and private Blob in Frankfurt.
 - [x] Verify typecheck and production build.
 
 ### Task 2: Canonical fixture and team identity
@@ -42,22 +43,28 @@
 
 ### Task 4: Change classification
 - [x] Added, kickoff-changed, venue-changed, and team-changed events.
+- [x] Match repeated same-pair fixtures by nearest kickoff.
+- [x] Quarantine ambiguous repeated-pair matching rather than guessing.
 - [x] Missing fixtures enter `verification_required`.
 - [x] No implicit cancellation or deletion.
 
 ### Task 5: ASKF workbook parser
 - [x] Real `010.HAFTA PROGRAM.xls` fixture added to tests.
+- [x] Latest official `011.HAFTA PROGRAM.xls` downloaded from the live ASKF file manager and added as a fixture.
 - [x] Legacy XLS signature and file-size validation.
 - [x] XLS and XLSX parser adapters.
 - [x] U11–U19 category extraction.
 - [x] Darıca Gücü identity matching without Kartalgücü collision.
-- [x] Parse actual source workbook and confirm unique fixture IDs.
+- [x] Unique fixture identity includes season, category, teams, date, time, and venue.
+- [x] Parse real official workbooks and verify unique fixture identities.
 
 ### Task 6: ASKF file-manager selection
 - [x] Select highest numbered weekly workbook.
 - [x] Ignore unrelated file types.
 - [x] Prefer XLSX if the same week is duplicated in both supported formats.
 - [x] Handle file-manager labels that append size metadata.
+- [x] Verify live file-manager selectors with Edge + Playwright.
+- [x] Successfully download latest official workbook (week 11, 243,200 bytes).
 
 ### Task 7: Vercel ingestion and storage integration
 - [x] Add Playwright/Chromium official file-manager downloader.
@@ -65,20 +72,24 @@
 - [x] Add final live-pointer write as the publication commit point.
 - [x] Add `/api/cron-askf`, `/api/source-status`, and `/api/live`.
 - [x] Add sensitive `CRON_SECRET` and private Blob token environment.
-- [x] Add daily 13:00 UTC Cron (16:00 Türkiye time).
+- [x] Configure daily Cron; a one-time 18:00 Türkiye-time run is scheduled for integration verification.
 - [ ] Prove the first successful V4 Cron run against the live ASKF file manager.
 - [ ] Verify raw workbook and versioned JSON snapshot exist in V4 Blob.
 - [ ] Verify `/api/live` returns real, verified fixtures.
+- [ ] Restore Cron to 16:00 Türkiye time after successful verification.
 
 ### Task 8: Final P0 review
-- [x] Unit tests, parser tests, typecheck, build, and dependency audit.
+- [x] 34 automated tests.
+- [x] TypeScript check.
+- [x] Vite production build.
+- [x] `npm audit` reports zero vulnerabilities.
 - [ ] Verify Cron authorization and unauthorized request rejection.
 - [ ] Verify failed download and invalid workbook preserve the previous live snapshot.
 - [ ] Verify Vercel function logs contain no secrets.
 - [ ] Complete the P0 integration acceptance report.
 
 ## Current test baseline
-- 29 automated tests.
+- 34 automated tests.
 - TypeScript check passes.
 - Vite production build passes.
 - `npm audit` reports zero vulnerabilities.

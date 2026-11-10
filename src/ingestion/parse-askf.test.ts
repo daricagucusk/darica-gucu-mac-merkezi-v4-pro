@@ -4,14 +4,12 @@ import { describe, expect, it } from 'vitest';
 import { parseAskfRows, parseAskfWorkbook } from './parse-askf';
 
 describe('ASKF Excel ingestion', () => {
-  it('parses real ASKF XLS data and supports U11-U19 categories', async () => {
-    const bytes = await readFile(resolve(process.cwd(), 'tests/fixtures/010.HAFTA PROGRAM.xls'));
-    const parsed = await parseAskfWorkbook(bytes, '010.HAFTA PROGRAM.xls');
+  it('parses the latest live ASKF workbook downloaded from the official file manager', async () => {
+    const bytes = await readFile(resolve(process.cwd(), 'tests/fixtures/011.HAFTA PROGRAM.xls'));
+    const parsed = await parseAskfWorkbook(bytes, '011.HAFTA PROGRAM.xls');
 
-    expect(parsed.sourceWeek).toBe(10);
-    expect(parsed.sourceTitle).toContain('03 KASIM 2026');
-    expect(parsed.matches.length).toBeGreaterThan(180);
-    expect(parsed.matches.some((match) => match.group === 'U17')).toBe(true);
+    expect(parsed.sourceWeek).toBe(11);
+    expect(parsed.matches.length).toBeGreaterThan(30);
     expect(new Set(parsed.matches.map((match) => match.id)).size).toBe(parsed.matches.length);
     expect(parsed.daricaMatches.length).toBeGreaterThan(0);
     expect(parsed.daricaMatches.every((match) =>
@@ -21,6 +19,18 @@ describe('ASKF Excel ingestion', () => {
       match.home.toLocaleLowerCase('tr-TR').includes('kartalgücü') ||
       match.away.toLocaleLowerCase('tr-TR').includes('kartalgücü')
     )).toBe(false);
+  });
+
+  it('parses the archived ASKF XLS data and supports U11-U19 categories', async () => {
+    const bytes = await readFile(resolve(process.cwd(), 'tests/fixtures/010.HAFTA PROGRAM.xls'));
+    const parsed = await parseAskfWorkbook(bytes, '010.HAFTA PROGRAM.xls');
+
+    expect(parsed.sourceWeek).toBe(10);
+    expect(parsed.sourceTitle).toContain('03 KASIM 2026');
+    expect(parsed.matches.length).toBeGreaterThan(180);
+    expect(parsed.matches.some((match) => match.group === 'U17')).toBe(true);
+    expect(new Set(parsed.matches.map((match) => match.id)).size).toBe(parsed.matches.length);
+    expect(parsed.daricaMatches.length).toBeGreaterThan(0);
   });
 
   it('rejects a file whose bytes do not match its declared Excel type', async () => {
