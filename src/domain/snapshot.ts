@@ -35,6 +35,11 @@ export function evaluateSnapshot(
     preservePrevious: previous !== null,
   });
 
+  const fixtureIds = Array.isArray(incoming.matches)
+    ? incoming.matches.map((match) => match?.id?.trim())
+    : [];
+  const uniqueFixtureIds = new Set(fixtureIds);
+
   if (
     incoming.source !== 'Kocaeli ASKF' ||
     incoming.provenance !== 'official_site_download' ||
@@ -46,7 +51,8 @@ export function evaluateSnapshot(
     !incoming.parserVersion?.trim() ||
     !Array.isArray(incoming.matches) ||
     incoming.matches.length < MINIMUM_FIXTURES ||
-    incoming.matches.some((match) => !match?.id?.trim())
+    fixtureIds.some((id) => !id) ||
+    uniqueFixtureIds.size !== fixtureIds.length
   ) {
     return reject('invalid');
   }

@@ -30,6 +30,12 @@ describe('snapshot acceptance', () => {
     expect(evaluateSnapshot(null, validIncoming({ sourceHash: 'not-a-hash' })).apply).toBe(false);
   });
 
+  it('rejects duplicate fixture identities before publication', () => {
+    const matches = Array.from({ length: 60 }, (_, i) => ({ id: `fixture-${i}` }));
+    matches[59] = { id: 'fixture-0' };
+    expect(evaluateSnapshot(null, validIncoming({ matches })).reason).toBe('invalid');
+  });
+
   it('rejects an older source week', () => {
     expect(evaluateSnapshot(previous, validIncoming({ sourceWeek: 9 })).reason).toBe('older-week');
   });
