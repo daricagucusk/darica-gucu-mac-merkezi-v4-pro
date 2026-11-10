@@ -134,6 +134,15 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       console.error('ASKF_STATUS_FINALIZE_FAILED', errorMessage(statusError));
     }
 
+    console.info('ASKF_REFRESH_VERIFIED', JSON.stringify({
+      sourceFile: snapshot.sourceFile,
+      sourceWeek: snapshot.sourceWeek,
+      sourceSeason: snapshot.season,
+      sourceHash: snapshot.sourceHash,
+      matchesCount: snapshot.matches.length,
+      daricaMatchCount: snapshot.daricaMatches.length,
+      changesCount: snapshot.changes.length,
+    }));
     res.status(200).json({
       status: 'verified',
       sourceFile: snapshot.sourceFile,
