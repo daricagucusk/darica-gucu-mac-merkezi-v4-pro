@@ -1,109 +1,87 @@
 # Darıca Gücü Maç Merkezi V4 PRO — P0 Foundation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Establish an isolated V4 source project and a tested, fail-closed fixture/snapshot domain core without changing original or V3 production.
+**Goal:** Establish an isolated V4 application and a tested ASKF ingestion/publication core without changing the original or V3 production systems.
 
-**Architecture:** Vite + React + TypeScript frontend with framework-neutral TypeScript domain modules. The first deliverable is canonical fixture identity, snapshot validation, and change classification. No cloud publication until real source and storage credentials are independently verified.
-
-**Tech Stack:** Node.js 24, Vite, React, TypeScript, Vitest, Vercel-compatible API boundary.
+**Architecture:** Vite + React + TypeScript frontend, pure TypeScript domain modules, Vercel Node.js API functions, Playwright + Chromium source discovery, Vercel Blob private storage.
 
 **Spec:** `docs/superpowers/specs/2026-11-11-darica-gucu-mac-merkezi-v4-design.md`
 
-## Global Constraints
+## Global constraints
 - Original and V3 production deployments remain untouched.
-- Work only in `D:\beyin2\Projeler\DaricaGucuMacMerkeziV4` on branch `develop/v4-pro`.
-- No live source publish or Vercel production deployment in this plan.
+- Work in `D:\beyin2\Projeler\DaricaGucuMacMerkeziV4` on `develop/v4-pro`.
+- No original/V3 domain changes.
 - Invalid or older snapshots never replace verified state.
 - Missing fixtures become `verification_required`, never cancellation.
 - No secrets in client code, repository, or logs.
-- Test-first for every behavior change.
+- No paid service upgrade without explicit approval.
 
-## Review Focus
-1. Same match represented with different team spelling must resolve to the same canonical team IDs.
-2. Darıca Gücü and Darıca Kartalgücü must remain distinct teams.
-3. Same fixture played at a different venue/time must not be silently conflated.
-4. A newer file with abnormal match loss must be rejected while preserving prior state.
-5. A removed match must become verification-required, not deleted or cancelled.
-
----
+## Completed tasks
 
 ### Task 1: Project baseline and design assets
-
-**Files:**
-- Create: `package.json`, `tsconfig.json`, `vite.config.ts`, `index.html`
-- Create: `src/main.tsx`, `src/App.tsx`, `src/styles.css`
-- Create: `DESIGN.md`, `README.md`, `.gitignore`
-
-**Interfaces:** Runnable React/TypeScript application shell and baseline test command.
-
-- [ ] Create Vite React TypeScript project configuration.
-- [ ] Add an accessible shell that displays `awaiting_first_run` until a verified snapshot exists.
-- [ ] Run typecheck and production build.
+- [x] Create isolated Vite + React + TypeScript project.
+- [x] Create `DESIGN.md`, design specification, README, and ignore rules.
+- [x] Create private GitHub repository and `develop/v4-pro` branch.
+- [x] Create separate Vercel project with SSO protection and Node 24.
+- [x] Verify typecheck and production build.
 
 ### Task 2: Canonical fixture and team identity
+- [x] Turkish case/diacritic/punctuation normalization.
+- [x] Configurable alias mapping.
+- [x] Keep Darıca Gücü and Darıca Kartalgücü distinct.
+- [x] Stable fixture identity tests.
 
-**Files:**
-- Create: `src/domain/identity.ts`
-- Test: `src/domain/identity.test.ts`
+### Task 3: Snapshot validation and acceptance
+- [x] Validate official source provenance and Excel extension.
+- [x] Validate SHA-256, source week, season, checked timestamp, and parser version.
+- [x] Reject duplicate fixture IDs.
+- [x] Reject older season/week and unchanged hashes.
+- [x] Reject abnormal fixture loss while preserving prior state.
+- [x] Allow season rollover without comparing old-season fixture counts.
 
-**Interfaces:**
-- `normalizeTeamName(name: string): string`
-- `canonicalTeamId(name: string, aliases?: Record<string, string>): string`
-- `fixtureIdentity(fixture: FixtureIdentityInput): string`
+### Task 4: Change classification
+- [x] Added, kickoff-changed, venue-changed, and team-changed events.
+- [x] Missing fixtures enter `verification_required`.
+- [x] No implicit cancellation or deletion.
 
-- [ ] Add tests for Turkish casing, punctuation, whitespace, aliases, and Darıca Gücü vs Darıca Kartalgücü.
-- [ ] Run tests and observe expected RED failures.
-- [ ] Implement deterministic normalization and identity.
-- [ ] Run targeted and full suite GREEN.
+### Task 5: ASKF workbook parser
+- [x] Real `010.HAFTA PROGRAM.xls` fixture added to tests.
+- [x] Legacy XLS signature and file-size validation.
+- [x] XLS and XLSX parser adapters.
+- [x] U11–U19 category extraction.
+- [x] Darıca Gücü identity matching without Kartalgücü collision.
+- [x] Parse actual source workbook and confirm unique fixture IDs.
 
-### Task 3: Snapshot validation and atomic-acceptance decision
+### Task 6: ASKF file-manager selection
+- [x] Select highest numbered weekly workbook.
+- [x] Ignore unrelated file types.
+- [x] Prefer XLSX if the same week is duplicated in both supported formats.
+- [x] Handle file-manager labels that append size metadata.
 
-**Files:**
-- Create: `src/domain/snapshot.ts`
-- Test: `src/domain/snapshot.test.ts`
+### Task 7: Vercel ingestion and storage integration
+- [x] Add Playwright/Chromium official file-manager downloader.
+- [x] Add private Blob source and snapshot archive.
+- [x] Add final live-pointer write as the publication commit point.
+- [x] Add `/api/cron-askf`, `/api/source-status`, and `/api/live`.
+- [x] Add sensitive `CRON_SECRET` and private Blob token environment.
+- [x] Add daily 13:00 UTC Cron (16:00 Türkiye time).
+- [ ] Prove the first successful V4 Cron run against the live ASKF file manager.
+- [ ] Verify raw workbook and versioned JSON snapshot exist in V4 Blob.
+- [ ] Verify `/api/live` returns real, verified fixtures.
 
-**Interfaces:**
-- `evaluateSnapshot(previous: VerifiedSnapshot | null, incoming: IncomingSnapshot): SnapshotDecision`
-- Validate SHA-256 shape, provenance, source week monotonicity, fixture minimum, and abnormal-loss threshold.
-- No storage side effects in this pure domain module.
+### Task 8: Final P0 review
+- [x] Unit tests, parser tests, typecheck, build, and dependency audit.
+- [ ] Verify Cron authorization and unauthorized request rejection.
+- [ ] Verify failed download and invalid workbook preserve the previous live snapshot.
+- [ ] Verify Vercel function logs contain no secrets.
+- [ ] Complete the P0 integration acceptance report.
 
-- [ ] Add tests for first valid snapshot, invalid provenance, malformed hash, older week, unchanged hash, and abnormal fixture loss.
-- [ ] Run tests and observe expected RED failures.
-- [ ] Implement fail-closed decision logic.
-- [ ] Run targeted and full suite GREEN.
+## Current test baseline
+- 29 automated tests.
+- TypeScript check passes.
+- Vite production build passes.
+- `npm audit` reports zero vulnerabilities.
 
-### Task 4: Change classification and removal quarantine
-
-**Files:**
-- Create: `src/domain/changes.ts`
-- Test: `src/domain/changes.test.ts`
-
-**Interfaces:**
-- `diffFixtures(previous: Fixture[], incoming: Fixture[]): FixtureChange[]`
-- Added, changed, and missing fixtures are distinct event types.
-- Missing fixtures always have status `verification_required`.
-
-- [ ] Add tests for added, kickoff change, venue change, unchanged, and removed fixtures.
-- [ ] Run tests and observe expected RED failures.
-- [ ] Implement deterministic diff.
-- [ ] Run targeted and full suite GREEN.
-
-### Task 5: Review and handoff readiness
-
-**Files:**
-- Modify: `README.md`, plan ledger.
-- Test: full test/typecheck/build.
-
-- [ ] Run complete test suite.
-- [ ] Run TypeScript check and production build.
-- [ ] Review changed files for accidental source/secret leakage.
-- [ ] Keep deployment preview-only; do not connect production domain or replace V3.
-- [ ] Record unresolved integration prerequisites.
-
-## Completion criteria
-- All domain tests pass.
-- TypeScript check and production build pass.
-- UI distinguishes unavailable/unverified source data from an empty fixture list.
-- Original site and V3 remain unchanged.
-- Later ingestion plan can consume the pure domain interfaces without changing semantics.
+## Not yet complete
+This P0 stage is not accepted until the first live ASKF Cron succeeds, the private Blob contains the real workbook and snapshot, and the live API returns the verified schedule. V4 remains separate and SSO-protected; do not replace the original or V3 domain.

@@ -1,0 +1,16 @@
+{
+  "name": "darica-gucu-mac-merkezi-v3",
+  "private": true,
+  "version": "3.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "description": "11. hafta Kocaeli ASKF gerçek XLS uyumlu, telefon öncelikli bağımsız futbol maç takip ve katalog PWA",
+  "dependencies": {
+    "@vercel/blob": "2.9.0",
+    "playwright-core": "1.56.1",
+    "@sparticuz/chromium": "141.0.0"
+  }
+}

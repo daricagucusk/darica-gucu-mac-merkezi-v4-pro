@@ -6,6 +6,7 @@ const validIncoming = (overrides: Partial<IncomingSnapshot> = {}): IncomingSnaps
   provenance: 'official_site_download',
   sourceFile: '011.HAFTA PROGRAM.xls',
   sourceWeek: 11,
+  sourceSeason: '2026-2027',
   sourceHash: 'a'.repeat(64),
   checkedAt: '2026-11-11T16:10:00+03:00',
   parserVersion: 'v4-test',
@@ -16,6 +17,7 @@ const validIncoming = (overrides: Partial<IncomingSnapshot> = {}): IncomingSnaps
 const previous: VerifiedSnapshot = {
   sourceFile: '010.HAFTA PROGRAM.xls',
   sourceWeek: 10,
+  sourceSeason: '2026-2027',
   sourceHash: 'b'.repeat(64),
   matches: Array.from({ length: 100 }, (_, i) => ({ id: `fixture-${i}` })),
 };
@@ -36,8 +38,21 @@ describe('snapshot acceptance', () => {
     expect(evaluateSnapshot(null, validIncoming({ matches })).reason).toBe('invalid');
   });
 
-  it('rejects an older source week', () => {
+  it('rejects an older source week in the same season', () => {
     expect(evaluateSnapshot(previous, validIncoming({ sourceWeek: 9 })).reason).toBe('older-week');
+  });
+
+  it('rejects an older season even when its week number is higher', () => {
+    expect(evaluateSnapshot(previous, validIncoming({ sourceSeason: '2025-2026', sourceWeek: 12 })).reason).toBe('older-season');
+  });
+
+  it('accepts a newer season starting at week one without comparing old-season fixture counts', () => {
+    const incoming = validIncoming({
+      sourceSeason: '2027-2028',
+      sourceWeek: 1,
+      matches: Array.from({ length: 35 }, (_, i) => ({ id: `new-season-${i}` })),
+    });
+    expect(evaluateSnapshot(previous, incoming).apply).toBe(true);
   });
 
   it('rejects unchanged source hash', () => {
