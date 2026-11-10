@@ -41,7 +41,7 @@ export async function downloadLatestAskfFile(): Promise<DownloadedAskfFile> {
     await page.locator('#FileManager1_Splitter_Folders').waitFor({ timeout: 30_000 });
     await page.waitForFunction(
       () => document.querySelectorAll("[id^='FileManager1_Splitter_Items_I']").length > 0 ||
-        document.querySelector('#FileManager1_Splitter_Folders_N0_10') !== null,
+        document.querySelector("[id^='FileManager1_Splitter_Folders_N0_']") !== null,
       undefined,
       { timeout: 30_000 },
     );
@@ -77,8 +77,10 @@ export async function downloadLatestAskfFile(): Promise<DownloadedAskfFile> {
     if (!selectedCandidate) throw new Error('ASKF dosya listesi seçim sırasında değişti.');
 
     await collection.items.nth(selectedCandidate.index).click();
+    const toolbarDownload = page.locator('#FileManager1_Splitter_Toolbar_DXI8_');
+    await toolbarDownload.waitFor({ state: 'visible', timeout: 15_000 });
     const downloadPromise = page.waitForEvent('download', { timeout: 30_000 });
-    await page.locator('#FileManager1_Splitter_Toolbar_DXI8_').click();
+    await toolbarDownload.click();
     const download = await downloadPromise;
     const filePath = await download.path();
     if (!filePath) throw new Error('ASKF indirme dosyası geçici diske yazılamadı.');
