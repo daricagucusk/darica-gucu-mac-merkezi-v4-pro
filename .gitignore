@@ -1,1 +1,10 @@
-node_modules/\ndist/\ncoverage/\n.env\n.env.*\n!.env.example\n.vercel/\n*.tsbuildinfo\n.DS_Store\nThumbs.db\n
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+.vercel/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
