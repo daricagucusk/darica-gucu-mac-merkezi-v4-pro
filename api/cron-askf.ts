@@ -39,7 +39,7 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message.slice(0, 240) : 'Bilinmeyen kaynak hatası.';
 }
 
-const scheduleDescription = 'Her gün Türkiye saati 16:00 (Vercel Hobby Cron)';
+const scheduleDescription = 'Geçici entegrasyon takvimi: her gün Türkiye saati 18:00';
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
   setNoStoreHeaders(res);
