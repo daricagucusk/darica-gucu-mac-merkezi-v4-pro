@@ -17,7 +17,7 @@ V4 is under isolated development. The original site and V3 production applicatio
 - ASKF file-manager candidate selection by highest week and real browser download test.
 - Vercel API routes: `/api/cron-askf`, `/api/source-status`, `/api/live`.
 - Private Vercel Blob store in Frankfurt and sensitive `CRON_SECRET` environment variable.
-- Vercel Cron configured for a one-time integration run at 18:00 Türkiye time; after verification it will be restored to 16:00 Türkiye time.
+- Vercel Cron currently runs daily at 18:00 Türkiye time as a temporary integration schedule (cron expression `0 15 * * *` UTC). After the first successful end-to-end ingestion and Blob archive verification, change it to 16:00 Türkiye time (`0 13 * * *` UTC).
 
 ## Current integration gate
 The first successful V4 Cron execution has not yet been proven. The live official file manager was successfully opened in Edge and its latest `011.HAFTA PROGRAM.xls` file was downloaded (243,200 bytes). That exact workbook is now a parser fixture and passes the V4 parser tests. The Vercel-hosted Playwright + Chromium run must still complete, archive the source workbook and versioned JSON snapshot in the V4 private Blob store, and publish a verified live snapshot.
