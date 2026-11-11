@@ -16,7 +16,7 @@ const initialStatus: SourceStatus = {
   lastSuccess: null,
   lastAttempt: null,
   lastError: null,
-  schedule: 'Her gün Türkiye saati 16:00 (Vercel Hobby Cron)',
+  schedule: 'Geçici entegrasyon takvimi: her gün Türkiye saati 18:00',
 };
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
