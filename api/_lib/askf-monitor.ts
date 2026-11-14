@@ -107,7 +107,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
     const downloaded = await downloadLatestAskfFile();
     const sourceHash = createHash('sha256').update(downloaded.bytes).digest('hex');
 
-    if (liveSnapshot?.sourceHash?.toLowerCase() === sourceHash.toLowerCase()) {
+    if (liveSnapshot && liveSnapshot.sourceHash.toLowerCase() === sourceHash.toLowerCase()) {
       await writeJSON<SourceStatus>(PATH_STATUS, {
         schema: 5,
         state: 'verified',
