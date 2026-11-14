@@ -127,7 +127,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
 
     const schedule = await parseAskfWorkbook(downloaded.bytes, downloaded.fileName);
     const result = await stageVerifiedSnapshot({
-      previous: live,
+      previous,
       schedule,
       sourceHash,
       checkedAt: attemptedIso,
