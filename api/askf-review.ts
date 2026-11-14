@@ -11,6 +11,7 @@ import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/htt
 import { assertSameOrigin, readJsonBody } from './_lib/request-security.js';
 import type { PendingAskfReview } from '../src/ingestion/stage-askf.js';
 import type { PublishedSnapshot } from '../src/ingestion/publish.js';
+import { notifyAskfReviewResult } from './_lib/notification-digest.js';
 
 interface ReviewBody {
   action?: 'approve' | 'reject' | 'rollback';
@@ -125,6 +126,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       await writeJSON(PATH_PENDING, null);
       const live = await readJSON<PublishedSnapshot>(PATH_LIVE);
       await updateStatus(live ? 'verified' : 'awaiting_first_run', live, false);
+      try { await notifyAskfReviewResult('rejected', pending.snapshot); } catch { console.error('ASKF_REJECT_NOTIFICATION_FAILED'); }
       res.status(200).json({ status: 'rejected', liveUnchanged: true });
       return;
     }
@@ -151,6 +153,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       sourceFile: pending.snapshot.sourceFile,
       previousHash: live?.sourceHash ?? null,
     });
+    try { await notifyAskfReviewResult('approved', pending.snapshot); } catch { console.error('ASKF_APPROVE_NOTIFICATION_FAILED'); }
     res.status(200).json({ status: 'approved', sourceHash: pending.snapshot.sourceHash });
   } catch {
     res.status(503).json({ error: 'İşlem sonucu doğrulanamadı. Ekranı yenileyip canlı programın ve bekleyen incelemenin durumunu kontrol et.' });
