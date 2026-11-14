@@ -298,6 +298,7 @@ export default function AskfReviewPanel({ onApproved }: Props) {
               <span>İndirme: {formatTimestamp(pending.stagedAt)}</span>
               <span>SHA-256: {pending.snapshot.sourceHash.slice(0, 18)}…</span>
             </div>
+            <a className="askf-download-link" href={`/api/askf-download?hash=${encodeURIComponent(pending.snapshot.sourceHash)}`}>ORİJİNAL EXCEL DOSYASINI İNDİR ↓</a>
             <div className="askf-review-actions">
               <button className="primary-button" type="button" disabled={busy} onClick={() => void review('approve')}>PROGRAMI ONAYLA</button>
               <button className="quiet-button" type="button" disabled={busy} onClick={() => void review('reject')}>REDDET</button>
