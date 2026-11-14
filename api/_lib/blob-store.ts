@@ -2,6 +2,10 @@ import { get, put } from '@vercel/blob';
 
 export const PATH_LIVE = 'askf/v4/live.json';
 export const PATH_STATUS = 'askf/v4/status.json';
+export const PATH_PENDING = 'askf/v4/pending.json';
+export const PATH_SETTINGS = 'askf/v4/settings.json';
+export const PATH_AUDIT_PREFIX = 'askf/v4/audit/';
+export const PATH_CHECK_LOCK = 'askf/v4/check.lock';
 
 export async function readJSON<T>(path: string): Promise<T | null> {
   const response = await get(path, { access: 'private' });
