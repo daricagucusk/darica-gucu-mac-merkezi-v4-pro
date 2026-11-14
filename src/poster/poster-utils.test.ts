@@ -45,6 +45,38 @@ describe('poster utilities', () => {
     })).toThrow(/doğrulanmış/i);
   });
 
+  it('builds a multi-match weekly programme from verified Darıca fixtures', () => {
+    const second: PosterFixture = {
+      ...fixture,
+      id: 'fixture-2',
+      group: 'U15',
+      date: '2026-11-22',
+      time: '11:00',
+      home: 'Darıca Gücü Spor',
+      away: 'Körfez Spor',
+    };
+    const copy = buildPosterCopy({
+      template: 'weekly-program',
+      fixture,
+      fixtures: [fixture, second],
+      verified: true,
+    });
+    expect(copy.details).toHaveLength(2);
+    expect(copy.details[1]).toContain('Körfez Spor');
+    expect(copy.caption).toContain('22 Kasım 2026');
+  });
+
+  it('does not create an unverified result and requires both entered scores', () => {
+    expect(() => buildPosterCopy({ template: 'result', fixture, verified: true })).toThrow(/skor/i);
+    const copy = buildPosterCopy({
+      template: 'result',
+      fixture: { ...fixture, homeScore: 2, awayScore: 1 },
+      verified: true,
+    });
+    expect(copy.details).toContain('2  —  1');
+    expect(copy.caption).toContain('2 - 1');
+  });
+
   it('allows a general club announcement without claiming a fixture exists', () => {
     const copy = buildPosterCopy({
       template: 'announcement',
