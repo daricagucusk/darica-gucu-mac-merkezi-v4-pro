@@ -11,7 +11,6 @@ type DashboardChange = {
 
 type Props = {
   metrics: DashboardMetrics;
-  matches: DashboardMatch[];
   changes: DashboardChange[];
   verified: boolean;
   lastUpdated?: string | null;
@@ -34,7 +33,7 @@ function changeLabel(type: string): string {
   }
 }
 
-export default function Dashboard({ metrics, matches, changes, verified, lastUpdated, onNavigate }: Props) {
+export default function Dashboard({ metrics, changes, verified, lastUpdated, onNavigate }: Props) {
   const maxCategory = Math.max(1, ...metrics.categoryCounts.map((item) => item.count));
   const featured = metrics.nextMatch;
   const recent = changes.slice(0, 4);
