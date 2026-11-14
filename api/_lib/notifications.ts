@@ -90,12 +90,17 @@ export async function createNotification(input: {
   await persistStore(store);
 
   if (input.push !== false && store.subscriptions.length) {
-    await sendPushToAll(store.subscriptions, {
+    const delivery = await sendPushToAll(store.subscriptions, {
       title: notification.title,
       body: notification.body,
       href: notification.href,
       notificationId: notification.id,
     });
+    if (delivery.expiredEndpoints.length) {
+      const expired = new Set(delivery.expiredEndpoints);
+      store.subscriptions = store.subscriptions.filter((item) => !expired.has(item.endpoint));
+      await persistStore(store);
+    }
   }
   return { created: true, notification };
 }
