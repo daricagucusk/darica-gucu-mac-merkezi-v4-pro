@@ -219,16 +219,17 @@ export async function getAskfMonitorState(): Promise<{
   pending: PendingAskfReview | null;
   rollbackAvailable: boolean;
 }> {
-  const [settings, status, pending, previousLive] = await Promise.all([
+  const [settings, status, pending, previousLive, live] = await Promise.all([
     readJSON<AskfMonitorSettings>(PATH_SETTINGS),
     readJSON<SourceStatus>(PATH_STATUS),
     readJSON<PendingAskfReview>(PATH_PENDING),
     readJSON<PublishedSnapshot>(PATH_PREVIOUS_LIVE),
+    readJSON<PublishedSnapshot>(PATH_LIVE),
   ]);
   return {
     settings: settings ?? defaultAskfMonitorSettings,
     status,
     pending,
-    rollbackAvailable: previousLive !== null,
+    rollbackAvailable: previousLive !== null && previousLive.sourceHash !== live?.sourceHash,
   };
 }
