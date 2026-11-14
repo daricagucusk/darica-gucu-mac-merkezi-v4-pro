@@ -267,3 +267,6 @@ h1 { margin: 7px 0 0; font-size: clamp(27px, 3vw, 36px); letter-spacing: -1.4px;
   .askf-review-actions { display: grid; grid-template-columns: 1fr; }
   .askf-review-actions button { width: 100%; }
 }
+
+.askf-download-link { width: fit-content; min-height: 44px; display: inline-flex; align-items: center; padding: 0 14px; border: 1px solid #687e70; border-radius: 6px; color: #d1e7d9; font-size: 11px; font-weight: 700; letter-spacing: .35px; text-decoration: none; }
+.askf-download-link:hover { background: #1b2925; }
