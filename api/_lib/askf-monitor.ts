@@ -83,14 +83,12 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
       return { status: 'skipped', reason: 'Haftalık kontrol günü değil; bir sonraki Salı 18:00 bekleniyor.' };
     }
     if (pending) return { status: 'pending_exists', pending };
-    if (trigger === 'manual') {
-      if (status?.state === 'running') {
-        return { status: 'skipped', reason: 'Başka bir ASKF kontrolü devam ediyor.' };
-      }
-      const lastAttempt = status?.lastAttempt ? Date.parse(status.lastAttempt) : 0;
-      if (lastAttempt && attemptedAt.getTime() - lastAttempt < 5 * 60 * 1000) {
-        return { status: 'skipped', reason: 'Güvenli kullanım için manuel kontrol aralığı 5 dakikadır.' };
-      }
+    const lastAttempt = status?.lastAttempt ? Date.parse(status.lastAttempt) : 0;
+    if (status?.state === 'running' && lastAttempt && attemptedAt.getTime() - lastAttempt < 90 * 1000) {
+      return { status: 'skipped', reason: 'Başka bir ASKF kontrolü devam ediyor.' };
+    }
+    if (trigger === 'manual' && lastAttempt && attemptedAt.getTime() - lastAttempt < 5 * 60 * 1000) {
+      return { status: 'skipped', reason: 'Güvenli kullanım için manuel kontrol aralığı 5 dakikadır.' };
     }
 
     await writeJSON<SourceStatus>(PATH_STATUS, {
