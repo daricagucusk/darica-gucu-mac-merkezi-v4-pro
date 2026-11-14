@@ -25,6 +25,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       ...(state.status ?? initialStatus),
       settings: state.settings ?? defaultAskfMonitorSettings,
       pendingReview: state.pending,
+      rollbackAvailable: state.rollbackAvailable,
     });
   } catch {
     console.error('ASKF_STATUS_READ_FAILED');
@@ -34,6 +35,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       lastError: 'Kaynak kayıtları şu anda okunamıyor.',
       settings: defaultAskfMonitorSettings,
       pendingReview: null,
+      rollbackAvailable: false,
     });
   }
 }
