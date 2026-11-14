@@ -39,9 +39,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   try {
     assertSameOrigin(req);
     const body = await readJsonBody<{ frequency?: string }>(req);
+    if (body.frequency !== 'daily' && body.frequency !== 'weekly') {
+      res.status(400).json({ error: 'Kontrol sıklığı geçersiz.' });
+      return;
+    }
     const settings: AskfMonitorSettings = {
       ...defaultAskfMonitorSettings,
-      frequency: body.frequency === 'daily' ? 'daily' : body.frequency === 'weekly' ? 'weekly' : 'weekly',
+      frequency: body.frequency,
     };
     if (!validSettings(settings)) {
       res.status(400).json({ error: 'Kontrol sıklığı geçersiz.' });
@@ -56,8 +60,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       lastSuccess: current?.lastSuccess ?? null,
       lastAttempt: current?.lastAttempt ?? null,
       lastError: current?.lastError ?? null,
-      schedule: describeAskfSchedule(settings),
       ...current,
+      schedule: describeAskfSchedule(settings),
     });
     await writeJSON(`${PATH_AUDIT_PREFIX}${Date.now()}-settings.json`, {
       action: 'settings_updated',
