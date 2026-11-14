@@ -106,7 +106,7 @@ describe('ASKF pending staging', () => {
 
   it('rejects an abnormal fixture loss without touching the pending queue', async () => {
     const { calls, storage } = fakeStorage();
-    const previousMatches = Array.from({ length: 40 }, (_, i) => fixture(i));
+    const previousMatches = Array.from({ length: 80 }, (_, i) => fixture(i));
     const result = await stageVerifiedSnapshot({
       previous: {
         sourceFile: '010.HAFTA PROGRAM.xls',
@@ -115,7 +115,7 @@ describe('ASKF pending staging', () => {
         sourceHash: 'b'.repeat(64),
         matches: previousMatches,
       },
-      schedule: schedule(previousMatches.slice(0, 10)),
+      schedule: schedule(previousMatches.slice(0, 40)),
       sourceHash: 'a'.repeat(64),
       checkedAt: '2026-11-11T16:00:00+03:00',
       parserVersion: 'v4-test',
