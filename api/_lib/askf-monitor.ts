@@ -13,7 +13,7 @@ import {
 import { defaultAskfMonitorSettings, describeAskfSchedule, shouldRunScheduledCheck, type AskfMonitorSettings } from '../../src/ingestion/schedule.js';
 import { parseAskfWorkbook } from '../../src/ingestion/parse-askf.js';
 import { stageVerifiedSnapshot, type PendingAskfReview } from '../../src/ingestion/stage-askf.js';
-import type { PreviousPublishedSnapshot, PublishedSnapshot } from '../../src/ingestion/publish.js';
+import type { PreviousPublishedSnapshot } from '../../src/ingestion/publish.js';
 
 interface SourceStatus {
   schema: number;
