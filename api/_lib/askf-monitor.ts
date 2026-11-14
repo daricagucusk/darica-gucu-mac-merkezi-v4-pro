@@ -4,6 +4,7 @@ import {
   PATH_AUDIT_PREFIX,
   PATH_LIVE,
   PATH_PENDING,
+  PATH_PREVIOUS_LIVE,
   PATH_SETTINGS,
   PATH_STATUS,
   readJSON,
@@ -216,15 +217,18 @@ export async function getAskfMonitorState(): Promise<{
   settings: AskfMonitorSettings;
   status: SourceStatus | null;
   pending: PendingAskfReview | null;
+  rollbackAvailable: boolean;
 }> {
-  const [settings, status, pending] = await Promise.all([
+  const [settings, status, pending, previousLive] = await Promise.all([
     readJSON<AskfMonitorSettings>(PATH_SETTINGS),
     readJSON<SourceStatus>(PATH_STATUS),
     readJSON<PendingAskfReview>(PATH_PENDING),
+    readJSON<PublishedSnapshot>(PATH_PREVIOUS_LIVE),
   ]);
   return {
     settings: settings ?? defaultAskfMonitorSettings,
     status,
     pending,
+    rollbackAvailable: previousLive !== null,
   };
 }
