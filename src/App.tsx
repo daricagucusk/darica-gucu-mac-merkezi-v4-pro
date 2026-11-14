@@ -275,7 +275,7 @@ function App() {
           <span className={verified && !stale ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span>
         </section>}
 
-        {screen === 'dashboard' && <Dashboard metrics={dashboardMetrics} matches={allMatches} changes={live.changes ?? []} verified={verified && !stale} lastUpdated={formatTimestamp(live.checkedAt ?? sourceStatus.lastSuccess)} onNavigate={setScreen}/>}
+        {screen === 'dashboard' && <Dashboard metrics={dashboardMetrics} changes={live.changes ?? []} verified={verified && !stale} lastUpdated={formatTimestamp(live.checkedAt ?? sourceStatus.lastSuccess)} onNavigate={setScreen}/>}
 
         {screen === 'matches' && <>
           <section className="next-match-panel">
