@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "Darıca Gücü Maç Merkezi V4 PRO",
+  "short_name": "Darıca Gücü",
+  "description": "Darıca Gücü kulüp operasyonları, doğrulanmış maç programı ve paylaşım stüdyosu.",
+  "lang": "tr-TR",
+  "start_url": "/?screen=dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#081322",
+  "theme_color": "#0A1220",
+  "categories": ["sports", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
