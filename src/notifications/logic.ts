@@ -40,3 +40,17 @@ export function isWithinReminderWindow(
   const delta = kickoff - now.getTime();
   return delta >= 0 && delta <= windowHours * 60 * 60 * 1000;
 }
+
+export function isDuplicateNotification(existingDedupeKeys: string[], candidateKey: string): boolean {
+  return existingDedupeKeys.includes(candidateKey);
+}
+
+export function shouldRemindFixture(
+  status: 'scheduled' | 'postponed' | 'cancelled',
+  date: string,
+  time: string,
+  now: Date,
+  windowHours = 30,
+): boolean {
+  return status === 'scheduled' && isWithinReminderWindow(date, time, now, windowHours);
+}
