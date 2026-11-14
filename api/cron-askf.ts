@@ -1,5 +1,6 @@
 import { timingSafeEqual } from 'node:crypto';
 import { runAskfCheck } from './_lib/askf-monitor.js';
+import { dispatchDailyFixtureReminders } from './_lib/notification-digest.js';
 import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
 
 export const config = { maxDuration: 60 };
@@ -24,6 +25,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   }
 
   const result = await runAskfCheck('cron');
+  let reminders = { created: 0, checked: 0 };
+  try {
+    reminders = await dispatchDailyFixtureReminders();
+  } catch {
+    console.error('ASKF_MATCH_REMINDER_DIGEST_FAILED');
+  }
   const statusCode = result.status === 'failed' ? 503 : result.status === 'rejected' ? 409 : 200;
-  res.status(statusCode).json(result);
+  res.status(statusCode).json({ ...result, reminders });
 }
