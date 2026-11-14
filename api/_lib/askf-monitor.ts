@@ -14,6 +14,7 @@ import { defaultAskfMonitorSettings, describeAskfSchedule, shouldRunScheduledChe
 import { parseAskfWorkbook } from '../../src/ingestion/parse-askf.js';
 import { stageVerifiedSnapshot, type PendingAskfReview } from '../../src/ingestion/stage-askf.js';
 import type { PreviousPublishedSnapshot, PublishedSnapshot } from '../../src/ingestion/publish.js';
+import { notifyAskfSourceIssue, notifyPendingAskfReview } from './notification-digest.js';
 
 interface SourceStatus {
   schema: number;
@@ -195,6 +196,11 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
       sourceHash: staged.snapshot.sourceHash,
       changesCount: staged.snapshot.changes.length,
     });
+    try {
+      await notifyPendingAskfReview(staged.snapshot);
+    } catch {
+      console.error('ASKF_PENDING_NOTIFICATION_FAILED');
+    }
     return { status: 'staged', pending: staged };
   } catch (error) {
     const reason = errorMessage(error);
@@ -211,6 +217,9 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
         lastResult: 'failed',
       });
       await writeAudit({ action: 'check_failed', trigger, error: reason });
+      if (liveSnapshot) {
+        try { await notifyAskfSourceIssue(attemptedAt); } catch { console.error('ASKF_SOURCE_NOTIFICATION_FAILED'); }
+      }
     } catch {
       console.error('ASKF_STATUS_WRITE_FAILED');
     }
