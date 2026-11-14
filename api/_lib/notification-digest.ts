@@ -1,6 +1,6 @@
 import { PATH_LIVE, readJSON } from './blob-store.js';
 import type { PublishedSnapshot } from '../../src/ingestion/publish.js';
-import { buildMatchReminderKey, isWithinReminderWindow } from '../../src/notifications/logic.js';
+import { buildMatchReminderKey, shouldRemindFixture } from '../../src/notifications/logic.js';
 import { createNotification } from './notifications.js';
 
 function istanbulDay(date: Date): string {
@@ -56,7 +56,7 @@ export async function dispatchDailyFixtureReminders(now = new Date()): Promise<{
   let created = 0;
   let checked = 0;
   for (const fixture of snapshot.daricaMatches) {
-    if (fixture.status !== 'scheduled' || !isWithinReminderWindow(fixture.date, fixture.time, now, 30)) continue;
+    if (!shouldRemindFixture(fixture.status, fixture.date, fixture.time, now, 30)) continue;
     checked += 1;
     const result = await createNotification({
       type: 'match_reminder',
