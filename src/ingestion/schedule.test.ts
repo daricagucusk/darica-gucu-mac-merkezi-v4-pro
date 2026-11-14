@@ -15,6 +15,6 @@ describe('ASKF scheduled check preferences', () => {
 
   it('uses Istanbul calendar day around UTC date boundaries', () => {
     expect(shouldRunScheduledCheck(defaultAskfMonitorSettings, new Date('2026-11-16T21:30:00.000Z'))).toBe(true);
-    expect(shouldRunScheduledCheck(defaultAskfMonitorSettings, new Date('2026-11-17T00:30:00.000Z'))).toBe(false);
+    expect(shouldRunScheduledCheck(defaultAskfMonitorSettings, new Date('2026-11-17T21:30:00.000Z'))).toBe(false);
   });
 });
