@@ -760,3 +760,5 @@ h1 { font-size: clamp(25px, 2.4vw, 34px); font-weight: 800; letter-spacing: -1.4
   .dashboard-hero::after, .metric-card, .category-fill, .page-enter, .notification-drawer {animation:none !important;}
   button, .metric-card, .quick-action {transition:none !important;}
 }
+
+.poster-score-warning { margin:6px 0 0; padding:9px 10px; border-left:2px solid var(--amber); background:rgba(247,185,85,.07); color:#f4ca83; font-size:9px; line-height:1.5; }
