@@ -45,7 +45,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
         p256dh: body.subscription.keys.p256dh,
         auth: body.subscription.keys.auth,
       },
-    }, req.headers['user-agent']);
+    }, Array.isArray(req.headers['user-agent']) ? req.headers['user-agent'][0] : req.headers['user-agent']);
     res.status(200).json({ status: 'subscribed' });
   } catch {
     res.status(403).json({ error: 'Push aboneliği kaydedilemedi.' });
