@@ -2,7 +2,7 @@ import { PATH_AUDIT_PREFIX, PATH_SETTINGS, PATH_STATUS, readJSON, writeJSON } fr
 import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
 import { assertSameOrigin, readJsonBody } from './_lib/request-security.js';
 import { defaultAskfMonitorSettings, describeAskfSchedule, type AskfMonitorSettings } from '../src/ingestion/schedule.js';
-import { getAskfMonitorState } from './_lib/askf-monitor.js';
+import { getAskfMonitorState } from './_lib/askf-state.js';
 
 interface SourceStatus {
   schema: number;
