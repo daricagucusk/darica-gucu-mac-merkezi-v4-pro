@@ -156,16 +156,17 @@ export async function renderPoster(canvas: HTMLCanvasElement, input: PosterRende
   let contentY = input.photo ? photoTop + photoHeight + height * 0.045 : subtitleY + height * 0.085;
   if (input.template === 'weekly-program') {
     const rows = input.copy.details.slice(0, 7);
-    const cardGap = height * 0.012;
-    const cardHeight = Math.min(height * 0.09, (height * 0.43 - cardGap * Math.max(0, rows.length - 1)) / Math.max(1, rows.length));
+    const cardGap = height * 0.007;
+    const availableHeight = Math.max(height * 0.22, height * 0.84 - contentY);
+    const cardHeight = Math.min(height * 0.075, (availableHeight - cardGap * Math.max(0, rows.length - 1)) / Math.max(1, rows.length));
     rows.forEach((line, index) => {
       roundedRect(ctx, margin, contentY, right - margin, cardHeight, 18, 'rgba(255,255,255,0.075)', 'rgba(255,255,255,0.13)');
       ctx.fillStyle = '#29D391';
       ctx.font = `700 ${Math.round(width * 0.024)}px "JetBrains Mono", monospace`;
       ctx.fillText(String(index + 1).padStart(2, '0'), margin + width * 0.025, contentY + cardHeight * 0.42);
       ctx.fillStyle = '#F4F8FB';
-      ctx.font = `600 ${Math.round(width * 0.023)}px Satoshi, Arial, sans-serif`;
-      wrapText(ctx, line, margin + width * 0.085, contentY + cardHeight * 0.43, right - margin - width * 0.12, width * 0.031, 2);
+      ctx.font = `600 ${Math.round(width * 0.018)}px Satoshi, Arial, sans-serif`;
+      wrapText(ctx, line, margin + width * 0.085, contentY + cardHeight * 0.43, right - margin - width * 0.12, width * 0.023, 2);
       contentY += cardHeight + cardGap;
     });
   } else if (input.template === 'matchday') {
