@@ -98,6 +98,7 @@ function stateLabel(state: string, stale: boolean): string {
   if (stale) return 'ESKİ VERİ · SON DOĞRULANMIŞ PROGRAM';
   switch (state) {
     case 'verified': return 'DOĞRULANDI';
+    case 'pending_review': return 'ONAY BEKLİYOR';
     case 'running': return 'KONTROL EDİLİYOR';
     case 'refresh_failed': return 'YENİLEME BAŞARISIZ';
     case 'not_configured': return 'YAPILANDIRILMADI';
