@@ -5,6 +5,7 @@ import {
   writeJSON,
 } from './blob-store.js';
 import { sendPushToAll } from './push.js';
+import { isDuplicateNotification } from '../../src/notifications/logic.js';
 
 export type NotificationType =
   | 'askf_pending_review'
@@ -74,7 +75,9 @@ export async function createNotification(input: {
 }): Promise<{ created: boolean; notification: NotificationRecord }> {
   const store = await readNotificationStore();
   const existing = store.notifications.find((item) => item.dedupeKey === input.dedupeKey);
-  if (existing) return { created: false, notification: existing };
+  if (isDuplicateNotification(store.notifications.map((item) => item.dedupeKey), input.dedupeKey) && existing) {
+    return { created: false, notification: existing };
+  }
 
   const notification: NotificationRecord = {
     id: randomUUID(),
