@@ -22,6 +22,7 @@ export interface PosterFixture {
 export interface PosterCopyInput {
   template: PosterTemplate;
   fixture: PosterFixture | null;
+  fixtures?: PosterFixture[];
   verified: boolean;
   title?: string;
   subtitle?: string;
@@ -44,7 +45,7 @@ export function getPosterDimensions(format: PosterFormat): PosterDimensions {
   return { ...DIMENSIONS[format] };
 }
 
-function formattedDate(value: string): string {
+export function formattedPosterDate(value: string): string {
   const parsed = new Date(`${value}T12:00:00+03:00`);
   if (Number.isNaN(parsed.getTime())) throw new Error('Afiş tarihi geçersiz.');
   return new Intl.DateTimeFormat('tr-TR', {
@@ -53,6 +54,10 @@ function formattedDate(value: string): string {
     year: 'numeric',
     timeZone: 'Europe/Istanbul',
   }).format(parsed);
+}
+
+function detailsForFixture(fixture: PosterFixture): string {
+  return `${formattedPosterDate(fixture.date)} · ${fixture.time}  |  ${fixture.home} - ${fixture.away}  |  ${fixture.venue}`;
 }
 
 export function buildPosterCopy(input: PosterCopyInput): PosterCopy {
@@ -68,22 +73,35 @@ export function buildPosterCopy(input: PosterCopyInput): PosterCopy {
     };
   }
 
-  if (!verified || !fixture) {
+  if (!verified) {
     throw new Error('Maç afişi için doğrulanmış ASKF fikstürü gereklidir.');
   }
 
+  if (template === 'weekly-program') {
+    const program = (input.fixtures ?? []).filter((item) => item.status === 'scheduled').slice(0, 7);
+    if (program.length === 0) throw new Error('Haftalık afiş için doğrulanmış Darıca Gücü maçı bulunamadı.');
+    const headline = input.title?.trim() || 'HAFTALIK PROGRAM';
+    const subtitle = input.subtitle?.trim() || 'Darıca Gücü Spor';
+    return {
+      headline,
+      subtitle,
+      details: program.map((item) => detailsForFixture(item)),
+      caption: `DARICA GÜCÜ SPOR · HAFTALIK MAÇ PROGRAMI\n\n${program.map((item) =>
+        `${item.group} · ${formattedPosterDate(item.date)} · ${item.time}\n${item.home} - ${item.away}\n${item.venue}`,
+      ).join('\n\n')}\n\nTakımımızı desteklemeyi unutma!`,
+    };
+  }
+
+  if (!fixture) throw new Error('Afiş için karşılaşma seçilmelidir.');
   if (template === 'result' && (
     !Number.isInteger(fixture.homeScore) || !Number.isInteger(fixture.awayScore)
   )) {
-    throw new Error('Maç sonucu afişi için doğrulanmış skor bilgisi gereklidir.');
+    throw new Error('Maç sonucu afişi için skor bilgisi girilmelidir.');
   }
 
-  const headline = input.title?.trim() || (
-    template === 'weekly-program' ? 'HAFTALIK PROGRAM' :
-    template === 'result' ? 'MAÇ SONUCU' : 'MAÇ GÜNÜ'
-  );
+  const headline = input.title?.trim() || (template === 'result' ? 'MAÇ SONUCU' : 'MAÇ GÜNÜ');
   const subtitle = input.subtitle?.trim() || fixture.group;
-  const date = formattedDate(fixture.date);
+  const date = formattedPosterDate(fixture.date);
   const details = template === 'result'
     ? [
         fixture.home,
