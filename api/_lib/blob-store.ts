@@ -6,7 +6,6 @@ export const PATH_PENDING = 'askf/v4/pending.json';
 export const PATH_PREVIOUS_LIVE = 'askf/v4/previous-live.json';
 export const PATH_SETTINGS = 'askf/v4/settings.json';
 export const PATH_AUDIT_PREFIX = 'askf/v4/audit/';
-export const PATH_CHECK_LOCK = 'askf/v4/check.lock';
 
 export async function readJSON<T>(path: string): Promise<T | null> {
   const response = await get(path, { access: 'private' });
