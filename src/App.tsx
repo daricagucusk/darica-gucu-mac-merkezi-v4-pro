@@ -260,7 +260,7 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>İZOLE V4 GELİŞTİRME</span></div>
+        <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>KULÜP KOMUTA MERKEZİ</span></div>
       </aside>
 
       <main className="main-content">
