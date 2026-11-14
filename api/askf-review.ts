@@ -153,6 +153,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     });
     res.status(200).json({ status: 'approved', sourceHash: pending.snapshot.sourceHash });
   } catch {
-    res.status(503).json({ error: 'İşlem tamamlanamadı. Canlı programın son doğrulanmış sürümü korunuyor.' });
+    res.status(503).json({ error: 'İşlem sonucu doğrulanamadı. Ekranı yenileyip canlı programın ve bekleyen incelemenin durumunu kontrol et.' });
   }
 }
