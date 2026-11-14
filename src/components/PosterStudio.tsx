@@ -34,7 +34,8 @@ export default function PosterStudio({ fixtures, verified }: Props) {
   const [rendering, setRendering] = useState(false);
   const [feedback, setFeedback] = useState('');
 
-  const selectedFixture = useMemo(() => fixtures.find((match) => match.id === fixtureId) ?? fixtures[0] ?? null, [fixtures, fixtureId]);
+  const eligibleFixtures = useMemo(() => fixtures.filter((match) => match.status === 'scheduled'), [fixtures]);
+  const selectedFixture = useMemo(() => eligibleFixtures.find((match) => match.id === fixtureId) ?? eligibleFixtures[0] ?? null, [eligibleFixtures, fixtureId]);
 
   useEffect(() => {
     if (!photoFile) {
@@ -59,8 +60,8 @@ export default function PosterStudio({ fixtures, verified }: Props) {
   }, [photoFile]);
 
   useEffect(() => {
-    setFixtureId(fixtures[0]?.id ?? '');
-  }, [fixtures]);
+    setFixtureId(eligibleFixtures[0]?.id ?? '');
+  }, [eligibleFixtures]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,7 +79,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
       const copy = buildPosterCopy({
         template,
         fixture,
-        fixtures,
+        fixtures: eligibleFixtures,
         verified,
         title: template === 'announcement' ? (title || 'KULÜP DUYURUSU') : title,
         subtitle: template === 'announcement' ? announcementText : subtitle,
@@ -97,7 +98,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
       setRendering(false);
     }
     return () => { active = false; };
-  }, [template, format, selectedFixture, fixtures, verified, title, subtitle, homeScore, awayScore, announcementText, photo]);
+  }, [template, format, selectedFixture, eligibleFixtures, verified, title, subtitle, homeScore, awayScore, announcementText, photo]);
 
   async function canvasBlob(): Promise<Blob> {
     const canvas = canvasRef.current;
@@ -176,7 +177,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
             <button type="button" className={template === 'matchday' ? 'poster-template active' : 'poster-template'} onClick={() => { setTemplate('matchday'); setTitle('MAÇ GÜNÜ'); }}>
               <span className="template-art template-art-match"><b>VS</b><i/></span><strong>Maç günü</strong><small>Karşılaşma duyurusu</small>
             </button>
-            <button type="button" className={template === 'weekly-program' ? 'poster-template active' : 'poster-template'} disabled={!verified || fixtures.length === 0} onClick={() => { setTemplate('weekly-program'); setTitle('HAFTALIK PROGRAM'); }}>
+            <button type="button" className={template === 'weekly-program' ? 'poster-template active' : 'poster-template'} disabled={!verified || eligibleFixtures.length === 0} onClick={() => { setTemplate('weekly-program'); setTitle('HAFTALIK PROGRAM'); }}>
               <span className="template-art template-art-week"><b>01</b><i/><i/><i/></span><strong>Haftalık program</strong><small>Haftanın maç listesi</small>
             </button>
             <button type="button" className={template === 'result' ? 'poster-template active' : 'poster-template'} disabled={!verified || !selectedFixture} onClick={() => { setTemplate('result'); setTitle('MAÇ SONUCU'); }}>
@@ -200,7 +201,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
             <label className="poster-field">
               <span>Karşılaşma</span>
               <select value={selectedFixture?.id ?? ''} onChange={(event) => setFixtureId(event.target.value)} disabled={!verified || template === 'weekly-program'}>
-                {fixtures.map((match) => <option key={match.id} value={match.id}>{match.group} · {match.home} – {match.away}</option>)}
+                {eligibleFixtures.map((match) => <option key={match.id} value={match.id}>{match.group} · {match.home} – {match.away}</option>)}
               </select>
               {template === 'weekly-program' && <small>Doğrulanmış programdaki en fazla 7 Darıca Gücü karşılaşması kullanılır.</small>}
             </label>
@@ -223,6 +224,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
           )}
 
           {template === 'result' && (
+            <p className="poster-score-warning">Skor verisi ASKF fikstüründen gelmiyor. Paylaşmadan önce iki takımın sonucunu doğrula.</p>
             <div className="poster-score-fields">
               <label className="poster-field"><span>{selectedFixture?.home ?? 'Ev sahibi'} skoru</span><input inputMode="numeric" type="number" min="0" max="99" value={homeScore} onChange={(event) => setHomeScore(event.target.value)}/></label>
               <label className="poster-field"><span>{selectedFixture?.away ?? 'Deplasman'} skoru</span><input inputMode="numeric" type="number" min="0" max="99" value={awayScore} onChange={(event) => setAwayScore(event.target.value)}/></label>
