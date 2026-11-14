@@ -34,13 +34,14 @@ function client(): WebPushClient | null {
 export async function sendPushToAll(
   subscriptions: StoredPushSubscription[],
   payload: PushPayload,
-): Promise<{ delivered: number; expired: number; failed: number }> {
+): Promise<{ delivered: number; expired: number; failed: number; expiredEndpoints: string[] }> {
   const push = client();
-  if (!push) return { delivered: 0, expired: 0, failed: subscriptions.length };
+  if (!push) return { delivered: 0, expired: 0, failed: subscriptions.length, expiredEndpoints: [] };
 
   let delivered = 0;
   let expired = 0;
   let failed = 0;
+  const expiredEndpoints: string[] = [];
   const body = JSON.stringify({
     title: payload.title,
     body: payload.body,
@@ -58,11 +59,12 @@ export async function sendPushToAll(
         : 0;
       if (statusCode === 404 || statusCode === 410) {
         expired += 1;
+        expiredEndpoints.push(subscription.endpoint);
       } else {
         failed += 1;
       }
     }
   }
 
-  return { delivered, expired, failed };
+  return { delivered, expired, failed, expiredEndpoints };
 }
