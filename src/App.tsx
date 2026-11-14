@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import AskfReviewPanel from './components/AskfReviewPanel';
 import {
   addTrackedName,
   matchesForClub,
@@ -308,22 +309,7 @@ function App() {
           <div className="module-content"><p className="module-intro">PNG afiş şablonları sonraki geliştirme diliminde eklenecek. Bu aşamada doğrulanmış Darıca Gücü maçlarından WhatsApp duyuru metni hazırlanır.</p><pre className="share-preview">{shareText}</pre><button className="primary-button" type="button" disabled={!verified} onClick={() => void copyShareText()}>WhatsApp metnini kopyala</button><span className="copy-feedback" aria-live="polite">{copyState}</span></div>
         </section>}
 
-        {screen === 'source' && <section className="module-panel">
-          <div className="section-heading"><div><span className="eyebrow">ASKF KAYNAK OPERASYONU</span><h2>Kaynak ve doğrulama durumu</h2></div><span className={verified && !stale ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span></div>
-          <div className="module-content source-details"><dl>
-            <div><dt>Resmî kaynak</dt><dd><a href="https://www.kaskf.org/HaftalikProgram" target="_blank" rel="noreferrer">Kocaeli ASKF haftalık programı ↗</a></dd></div>
-            <div><dt>Son başarılı kontrol</dt><dd>{formatTimestamp(sourceStatus.lastSuccess)}</dd></div>
-            <div><dt>Son deneme</dt><dd>{formatTimestamp(sourceStatus.lastAttempt)}</dd></div>
-            <div><dt>Kaynak dosyası</dt><dd>{live.sourceFile ?? sourceStatus.sourceFile ?? 'Henüz yok'}</dd></div>
-            <div><dt>Hafta / sezon</dt><dd>{live.sourceWeek ? `${live.sourceWeek}. hafta · ${live.season ?? ''}` : 'Henüz yok'}</dd></div>
-            <div><dt>Toplam maç</dt><dd>{verified ? allMatches.length : 'Doğrulama bekleniyor'}</dd></div>
-            <div><dt>Darıca Gücü maçı</dt><dd>{verified ? daricaMatches.length : 'Doğrulama bekleniyor'}</dd></div>
-            <div><dt>SHA-256</dt><dd className="hash-value">{live.sourceHash ?? sourceStatus.sourceHash ?? 'Henüz yok'}</dd></div>
-          </dl>
-            {sourceStatus.lastError && <p className="source-error">{sourceStatus.lastError}</p>}
-            <p className="quiet-note">Otomatik yenileme sunucu tarafındaki yetkili Cron ile yapılır. Yönetim anahtarı tarayıcıya gönderilmez. İlk başarılı Cron ve Blob arşiv doğrulaması tamamlanana kadar canlı veri kabul kapısı açık kalır.</p>
-          </div>
-        </section>}
+        {screen === 'source' && <AskfReviewPanel onApproved={() => window.location.reload()} />}
 
         <footer className="app-footer"><span>V4 PRO · İZOLE GELİŞTİRME</span><span>ORİJİNAL VE V3 CANLI SİSTEMLER KORUNUYOR</span></footer>
       </main>
