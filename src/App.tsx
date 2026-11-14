@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import AskfReviewPanel from './components/AskfReviewPanel';
+import Dashboard from './components/Dashboard';
+import PosterStudio from './components/PosterStudio';
+import NotificationCenter from './components/NotificationCenter';
+import { buildDashboardMetrics } from './dashboard/metrics';
+import type { PosterFixture } from './poster/poster-utils';
 import {
   addTrackedName,
   matchesForClub,
@@ -57,12 +63,13 @@ type LiveData = {
 
 const PRIMARY = 'Darıca Gücü Spor';
 const navigation = [
+  { id: 'dashboard', label: 'Kontrol Merkezi', short: 'Özet' },
   { id: 'matches', label: 'Maç Merkezi', short: 'Maç' },
   { id: 'clubs', label: 'Kulüplerim', short: 'Kulüpler' },
   { id: 'venues', label: 'Saha Merkezi', short: 'Sahalar' },
   { id: 'changes', label: 'Değişiklikler', short: 'Değişim' },
-  { id: 'share', label: 'Paylaşım Stüdyosu', short: 'Paylaşım' },
-  { id: 'source', label: 'ASKF Yönetimi', short: 'Kaynak' },
+  { id: 'posters', label: 'Afiş Stüdyosu', short: 'Afiş' },
+  { id: 'source', label: 'ASKF Yönetimi', short: 'ASKF' },
 ] as const;
 type Screen = typeof navigation[number]['id'];
 
@@ -73,6 +80,12 @@ const initialStatus: SourceStatus = {
   lastError: null,
 };
 const initialLive: LiveData = { status: 'not_configured', matches: [], daricaMatches: [], changes: [] };
+
+function initialScreen(): Screen {
+  const requested = new URLSearchParams(window.location.search).get('screen');
+  return navigation.some((item) => item.id === requested) ? requested as Screen : 'dashboard';
+}
+
 
 function readList(key: string, fallback: string[]): string[] {
   try {
@@ -97,6 +110,7 @@ function stateLabel(state: string, stale: boolean): string {
   if (stale) return 'ESKİ VERİ · SON DOĞRULANMIŞ PROGRAM';
   switch (state) {
     case 'verified': return 'DOĞRULANDI';
+    case 'pending_review': return 'ONAY BEKLİYOR';
     case 'running': return 'KONTROL EDİLİYOR';
     case 'refresh_failed': return 'YENİLEME BAŞARISIZ';
     case 'not_configured': return 'YAPILANDIRILMADI';
@@ -119,7 +133,7 @@ function App() {
   const [live, setLive] = useState<LiveData>(initialLive);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [screen, setScreen] = useState<Screen>('matches');
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [trackedClubs, setTrackedClubs] = useState<string[]>(() => readList('dg-v4-tracked-clubs', [PRIMARY]));
   const [trackedVenues, setTrackedVenues] = useState<string[]>(() => readList('dg-v4-tracked-venues', []));
   const [clubInput, setClubInput] = useState('');
@@ -129,7 +143,6 @@ function App() {
   const [selectedGroup, setSelectedGroup] = useState('ALL');
   const [selectedVenue, setSelectedVenue] = useState('ALL');
   const [matchSearch, setMatchSearch] = useState('');
-  const [copyState, setCopyState] = useState('');
 
   useEffect(() => {
     try {
@@ -187,6 +200,26 @@ function App() {
     .sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`))[0], [daricaMatches, today]);
   const verified = live.status === 'verified';
   const stale = live.freshness === 'stale' || sourceStatus.state === 'refresh_failed';
+  const dashboardMetrics = useMemo(() => buildDashboardMetrics({
+    matches: allMatches,
+    daricaMatches,
+    trackedClubCount: trackedClubs.length,
+    changes: live.changes ?? [],
+    now: new Date(),
+    sourceState: sourceStatus.state,
+    freshness: live.freshness,
+  }), [allMatches, daricaMatches, trackedClubs.length, live.changes, sourceStatus.state, live.freshness]);
+  const posterFixtures: PosterFixture[] = daricaMatches.map((match) => ({
+    id: match.id,
+    group: match.group,
+    date: match.date,
+    time: match.time,
+    home: match.home,
+    away: match.away,
+    venue: match.venue,
+    status: match.status,
+  }));
+
   const groups = useMemo(() => [...new Set(allMatches.map((match) => match.group))].sort(), [allMatches]);
   const venues = useMemo(() => venuesFrom(allMatches), [allMatches]);
   const filteredMatches = useMemo(() => {
@@ -201,17 +234,6 @@ function App() {
     return [...result].sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
   }, [allMatches, selectedClub, selectedGroup, selectedVenue, matchSearch]);
   const filteredVenues = venues.filter((venue) => venue.toLocaleLowerCase('tr-TR').includes(venueSearch.toLocaleLowerCase('tr-TR')));
-  const shareText = useMemo(() => {
-    const lines = [
-      'DARICA GÜCÜ SPOR · HAFTALIK MAÇ PROGRAMI',
-      `Kaynak: Kocaeli ASKF · ${live.sourceFile ?? sourceStatus.sourceFile ?? 'Kaynak dosyası bekleniyor'}`,
-      `Kontrol: ${formatTimestamp(live.checkedAt ?? sourceStatus.lastSuccess)}`,
-      '',
-      ...daricaMatches.map((match) => `${match.group} | ${formatDate(match.date)} · ${match.time}\n${match.home} - ${match.away}\n${match.venue}`),
-    ];
-    return verified ? lines.join('\n') : 'ASKF programı henüz doğrulanmadı. Doğrulanmamış maç duyurusu oluşturulamaz.';
-  }, [daricaMatches, live.checkedAt, live.sourceFile, sourceStatus.lastSuccess, sourceStatus.sourceFile, verified]);
-
   function addClub(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const next = addTrackedName(trackedClubs, clubInput);
@@ -223,14 +245,6 @@ function App() {
   function addVenue(venue: string) {
     setTrackedVenues((current) => current.includes(venue) ? current : [...current, venue]);
   }
-  async function copyShareText() {
-    if (!verified) return;
-    try {
-      await navigator.clipboard.writeText(shareText);
-      setCopyState('Metin kopyalandı');
-    } catch { setCopyState('Kopyalama desteklenmiyor'); }
-  }
-
   return (
     <div className="app-shell">
       <aside className="sidebar" aria-label="Ana gezinme">
@@ -246,20 +260,22 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>İZOLE V4 GELİŞTİRME</span></div>
+        <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>KULÜP KOMUTA MERKEZİ</span></div>
       </aside>
 
       <main className="main-content">
         <header className="topbar">
           <div><span className="eyebrow">DARICA GÜCÜ SPOR KULÜBÜ</span><h1>{navigation.find((item) => item.id === screen)?.label}</h1></div>
-          <div className="topbar-meta"><span className="environment">İZOLE V4</span><span className="date-label">{new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(new Date()).toLocaleUpperCase('tr-TR')}</span></div>
+          <div className="topbar-meta"><span className="environment">V4 PRO</span><span className="date-label">{new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(new Date()).toLocaleUpperCase('tr-TR')}</span><NotificationCenter onNavigate={setScreen}/></div>
         </header>
 
-        <section className={verified && !stale ? 'source-banner healthy' : 'source-banner'} aria-labelledby="source-heading">
+        {screen !== 'dashboard' && <section className={verified && !stale ? 'source-banner healthy' : 'source-banner'} aria-labelledby="source-heading">
           <div className="source-icon" aria-hidden="true">{verified && !stale ? '✓' : '!'}</div>
           <div className="source-copy"><span className="eyebrow">VERİ KAYNAĞI DURUMU</span><h2 id="source-heading">{stale ? 'Yenileme başarısız — son doğrulanmış program korunuyor' : verified ? 'ASKF programı doğrulandı' : sourceStatus.state === 'running' ? 'ASKF programı kontrol ediliyor' : 'İlk resmî ASKF doğrulaması bekleniyor'}</h2><p>{verified ? `${live.sourceFile ?? sourceStatus.sourceFile ?? 'ASKF Excel'} · ${live.season ?? sourceStatus.sourceSeason ?? ''} · ${allMatches.length} karşılaşma` : 'Doğrulanmış program oluşana kadar örnek maçlar canlı fikstür gibi gösterilmez.'}</p></div>
           <span className={verified && !stale ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span>
-        </section>
+        </section>}
+
+        {screen === 'dashboard' && <Dashboard metrics={dashboardMetrics} changes={live.changes ?? []} verified={verified && !stale} lastUpdated={formatTimestamp(live.checkedAt ?? sourceStatus.lastSuccess)} onNavigate={setScreen}/>}
 
         {screen === 'matches' && <>
           <section className="next-match-panel">
@@ -303,29 +319,11 @@ function App() {
           <div className="module-content">{!verified ? <div className="empty-state"><h3>Değişiklik geçmişi bekleniyor</h3><p>İki doğrulanmış ASKF programı karşılaştırılmadan değişiklik ilan edilmez.</p></div> : live.changes?.length ? <div className="management-list">{live.changes.map((change, index) => <div className="management-row change-row" key={`${change.fixtureId}-${change.type}-${index}`}><div><strong>{changeLabel(change.type)}</strong><span>{change.current?.home ?? change.previous?.home ?? 'Takım'} – {change.current?.away ?? change.previous?.away ?? 'Takım'} · {change.current?.group ?? change.previous?.group ?? ''}</span><small>{change.status === 'verification_required' || change.type === 'missing' ? 'İPTAL DEĞİL · DOĞRULAMA GEREKLİ' : change.current?.date ? `${formatDate(change.current.date)} · ${change.current.time ?? ''}` : 'Kaynak değişikliği'}</small></div></div>)}</div> : <div className="empty-state"><h3>Yeni değişiklik yok</h3><p>Son doğrulanmış program ile önceki program arasında kayıtlı değişiklik bulunmuyor.</p></div>}</div>
         </section>}
 
-        {screen === 'share' && <section className="module-panel">
-          <div className="section-heading"><div><span className="eyebrow">PAYLAŞIM STÜDYOSU · İLK AŞAMA</span><h2>Haftalık duyuru metni</h2></div><span className="muted-label">Metin çıktısı</span></div>
-          <div className="module-content"><p className="module-intro">PNG afiş şablonları sonraki geliştirme diliminde eklenecek. Bu aşamada doğrulanmış Darıca Gücü maçlarından WhatsApp duyuru metni hazırlanır.</p><pre className="share-preview">{shareText}</pre><button className="primary-button" type="button" disabled={!verified} onClick={() => void copyShareText()}>WhatsApp metnini kopyala</button><span className="copy-feedback" aria-live="polite">{copyState}</span></div>
-        </section>}
+        {screen === 'posters' && <PosterStudio fixtures={posterFixtures} verified={verified && !stale}/>}
 
-        {screen === 'source' && <section className="module-panel">
-          <div className="section-heading"><div><span className="eyebrow">ASKF KAYNAK OPERASYONU</span><h2>Kaynak ve doğrulama durumu</h2></div><span className={verified && !stale ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span></div>
-          <div className="module-content source-details"><dl>
-            <div><dt>Resmî kaynak</dt><dd><a href="https://www.kaskf.org/HaftalikProgram" target="_blank" rel="noreferrer">Kocaeli ASKF haftalık programı ↗</a></dd></div>
-            <div><dt>Son başarılı kontrol</dt><dd>{formatTimestamp(sourceStatus.lastSuccess)}</dd></div>
-            <div><dt>Son deneme</dt><dd>{formatTimestamp(sourceStatus.lastAttempt)}</dd></div>
-            <div><dt>Kaynak dosyası</dt><dd>{live.sourceFile ?? sourceStatus.sourceFile ?? 'Henüz yok'}</dd></div>
-            <div><dt>Hafta / sezon</dt><dd>{live.sourceWeek ? `${live.sourceWeek}. hafta · ${live.season ?? ''}` : 'Henüz yok'}</dd></div>
-            <div><dt>Toplam maç</dt><dd>{verified ? allMatches.length : 'Doğrulama bekleniyor'}</dd></div>
-            <div><dt>Darıca Gücü maçı</dt><dd>{verified ? daricaMatches.length : 'Doğrulama bekleniyor'}</dd></div>
-            <div><dt>SHA-256</dt><dd className="hash-value">{live.sourceHash ?? sourceStatus.sourceHash ?? 'Henüz yok'}</dd></div>
-          </dl>
-            {sourceStatus.lastError && <p className="source-error">{sourceStatus.lastError}</p>}
-            <p className="quiet-note">Otomatik yenileme sunucu tarafındaki yetkili Cron ile yapılır. Yönetim anahtarı tarayıcıya gönderilmez. İlk başarılı Cron ve Blob arşiv doğrulaması tamamlanana kadar canlı veri kabul kapısı açık kalır.</p>
-          </div>
-        </section>}
+        {screen === 'source' && <AskfReviewPanel onApproved={() => window.location.reload()} />}
 
-        <footer className="app-footer"><span>V4 PRO · İZOLE GELİŞTİRME</span><span>ORİJİNAL VE V3 CANLI SİSTEMLER KORUNUYOR</span></footer>
+        <footer className="app-footer"><span>DARICA GÜCÜ · V4 PRO</span><span>KOCAELİ ASKF · DOĞRULANMIŞ PROGRAM</span></footer>
       </main>
 
       <nav className="mobile-nav" aria-label="Mobil gezinme">

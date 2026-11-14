@@ -1,22 +1,15 @@
-import { PATH_STATUS, readJSON } from './_lib/blob-store.js';
+import { getAskfMonitorState } from './_lib/askf-state.js';
 import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
+import { defaultAskfMonitorSettings } from '../src/ingestion/schedule.js';
 
-interface SourceStatus {
-  schema: number;
-  state: string;
-  lastSuccess: string | null;
-  lastAttempt: string | null;
-  lastError: string | null;
-  schedule: string;
-}
-
-const initialStatus: SourceStatus = {
-  schema: 4,
+const initialStatus = {
+  schema: 5,
   state: 'awaiting_first_run',
   lastSuccess: null,
   lastAttempt: null,
   lastError: null,
-  schedule: 'Geçici entegrasyon takvimi: her gün Türkiye saati 18:00',
+  schedule: 'Her Salı saat 18:00 (Türkiye saati)',
+  pending: false,
 };
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
@@ -27,17 +20,22 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
   }
 
   try {
-    const status = await readJSON<SourceStatus>(PATH_STATUS);
-    res.status(200).json(status ?? initialStatus);
+    const state = await getAskfMonitorState();
+    res.status(200).json({
+      ...(state.status ?? initialStatus),
+      settings: state.settings ?? defaultAskfMonitorSettings,
+      pendingReview: state.pending,
+      rollbackAvailable: state.rollbackAvailable,
+    });
   } catch {
     console.error('ASKF_STATUS_READ_FAILED');
     res.status(503).json({
-      schema: 4,
+      ...initialStatus,
       state: 'not_configured',
-      lastSuccess: null,
-      lastAttempt: null,
       lastError: 'Kaynak kayıtları şu anda okunamıyor.',
-      schedule: initialStatus.schedule,
+      settings: defaultAskfMonitorSettings,
+      pendingReview: null,
+      rollbackAvailable: false,
     });
   }
 }
