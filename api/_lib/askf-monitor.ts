@@ -69,8 +69,8 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
     ]);
     liveSnapshot = live;
     previous = live ? {
-      sourceFile: liveSnapshot.sourceFile,
-      sourceWeek: liveSnapshot.sourceWeek,
+      sourceFile: live.sourceFile,
+      sourceWeek: live.sourceWeek,
       sourceSeason: live.season,
       sourceHash: live.sourceHash,
       checkedAt: live.checkedAt,
@@ -117,8 +117,8 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
         schedule: describeAskfSchedule(settings),
         sourceFile: liveSnapshot.sourceFile,
         sourceWeek: liveSnapshot.sourceWeek,
-        sourceSeason: live.season,
-        sourceHash: live.sourceHash,
+        sourceSeason: liveSnapshot.season,
+        sourceHash: liveSnapshot.sourceHash,
         matchesCount: liveSnapshot.matches.length,
         daricaMatchCount: liveSnapshot.daricaMatches.length,
         pending: false,
@@ -239,6 +239,6 @@ export async function getAskfMonitorState(): Promise<{
     settings: settings ?? defaultAskfMonitorSettings,
     status,
     pending,
-    rollbackAvailable: previousLive !== null && previousLive.sourceHash !== liveSnapshot?.sourceHash,
+    rollbackAvailable: previousLive !== null && previousLive.sourceHash !== live?.sourceHash,
   };
 }
