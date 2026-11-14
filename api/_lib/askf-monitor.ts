@@ -57,16 +57,25 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
   const attemptedAt = new Date();
   const attemptedIso = attemptedAt.toISOString();
   let previous: PreviousPublishedSnapshot | null = null;
+  let liveSnapshot: PublishedSnapshot | null = null;
   let currentStatus: SourceStatus | null = null;
 
   try {
     const [live, pending, storedSettings, status] = await Promise.all([
-      readJSON<PreviousPublishedSnapshot>(PATH_LIVE),
+      readJSON<PublishedSnapshot>(PATH_LIVE),
       readJSON<PendingAskfReview>(PATH_PENDING),
       readJSON<AskfMonitorSettings>(PATH_SETTINGS),
       readJSON<SourceStatus>(PATH_STATUS),
     ]);
-    previous = live;
+    liveSnapshot = live;
+    previous = live ? {
+      sourceFile: liveSnapshot.sourceFile,
+      sourceWeek: liveSnapshot.sourceWeek,
+      sourceSeason: live.season,
+      sourceHash: live.sourceHash,
+      checkedAt: live.checkedAt,
+      matches: live.matches,
+    } : null;
     currentStatus = status;
 
     const settings = storedSettings ?? defaultAskfMonitorSettings;
@@ -87,7 +96,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
     await writeJSON<SourceStatus>(PATH_STATUS, {
       schema: 5,
       state: 'running',
-      lastSuccess: status?.lastSuccess ?? live?.checkedAt ?? null,
+      lastSuccess: status?.lastSuccess ?? liveSnapshot?.checkedAt ?? null,
       lastAttempt: attemptedIso,
       lastError: null,
       schedule: describeAskfSchedule(settings),
@@ -98,7 +107,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
     const downloaded = await downloadLatestAskfFile();
     const sourceHash = createHash('sha256').update(downloaded.bytes).digest('hex');
 
-    if (live?.sourceHash?.toLowerCase() === sourceHash.toLowerCase()) {
+    if (liveSnapshot?.sourceHash?.toLowerCase() === sourceHash.toLowerCase()) {
       await writeJSON<SourceStatus>(PATH_STATUS, {
         schema: 5,
         state: 'verified',
@@ -106,16 +115,16 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
         lastAttempt: attemptedIso,
         lastError: null,
         schedule: describeAskfSchedule(settings),
-        sourceFile: live.sourceFile,
-        sourceWeek: live.sourceWeek,
+        sourceFile: liveSnapshot.sourceFile,
+        sourceWeek: liveSnapshot.sourceWeek,
         sourceSeason: live.season,
         sourceHash: live.sourceHash,
-        matchesCount: live.matches.length,
-        daricaMatchCount: live.daricaMatches.length,
+        matchesCount: liveSnapshot.matches.length,
+        daricaMatchCount: liveSnapshot.daricaMatches.length,
         pending: false,
         lastResult: 'unchanged',
       });
-      return { status: 'unchanged', sourceFile: live.sourceFile };
+      return { status: 'unchanged', sourceFile: liveSnapshot.sourceFile };
     }
 
     const schedule = await parseAskfWorkbook(downloaded.bytes, downloaded.fileName);
@@ -143,7 +152,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
       await writeJSON<SourceStatus>(PATH_STATUS, {
         schema: 5,
         state: reason === 'unchanged' ? 'verified' : 'refresh_failed',
-        lastSuccess: status?.lastSuccess ?? live?.checkedAt ?? null,
+        lastSuccess: status?.lastSuccess ?? liveSnapshot?.checkedAt ?? null,
         lastAttempt: attemptedIso,
         lastError: reason === 'unchanged' ? null : `Yeni ASKF dosyası doğrulama kapısından geçemedi: ${reason}`,
         schedule: describeAskfSchedule(settings),
@@ -196,7 +205,7 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
       const settings = await readJSON<AskfMonitorSettings>(PATH_SETTINGS) ?? defaultAskfMonitorSettings;
       await writeJSON<SourceStatus>(PATH_STATUS, {
         schema: 5,
-        state: previous ? 'refresh_failed' : 'awaiting_first_run',
+        state: liveSnapshot ? 'refresh_failed' : 'awaiting_first_run',
         lastSuccess: currentStatus?.lastSuccess ?? previous?.checkedAt ?? null,
         lastAttempt: attemptedIso,
         lastError: 'ASKF kaynağı indirilemedi veya doğrulanamadı.',
@@ -230,6 +239,6 @@ export async function getAskfMonitorState(): Promise<{
     settings: settings ?? defaultAskfMonitorSettings,
     status,
     pending,
-    rollbackAvailable: previousLive !== null && previousLive.sourceHash !== live?.sourceHash,
+    rollbackAvailable: previousLive !== null && previousLive.sourceHash !== liveSnapshot?.sourceHash,
   };
 }
