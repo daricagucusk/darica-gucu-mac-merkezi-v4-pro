@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Satoshi:wght@400;500;600;700;800&display=swap');
-
 :root {
-  font-family: 'Satoshi', 'Segoe UI', sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   color: #f1f5f7;
   background: #101820;
   font-synthesis: none;
@@ -762,3 +760,66 @@ h1 { font-size: clamp(25px, 2.4vw, 34px); font-weight: 800; letter-spacing: -1.4
 }
 
 .poster-score-warning { margin:6px 0 0; padding:9px 10px; border-left:2px solid var(--amber); background:rgba(247,185,85,.07); color:#f4ca83; font-size:9px; line-height:1.5; }
+
+/* --- AI yardımcı kartı --- */
+.ai-assist { margin: 14px 0; display: grid; gap: 10px; }
+.ai-assist-result { padding: 12px 14px; border-left: 2px solid var(--accent); background: #1a2630; border-radius: 4px; }
+.ai-assist-result p { margin: 6px 0 0; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-assist-result small { color: var(--muted); font-size: 11px; }
+
+/* ===== V5 premium: mobil, dokunma, erişilebilirlik ===== */
+:root { color-scheme: dark; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { scroll-padding-top: 16px; }
+body { min-height: 100vh; min-height: 100dvh; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+button, a, select, input, textarea, summary { touch-action: manipulation; }
+
+/* Odak: klavye ve ekran okuyucu kullanıcıları için tüm etkileşimli öğelerde görünür halka */
+a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+summary:focus-visible, [tabindex]:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+#main-content:focus { outline: none; }
+
+/* Atlama bağlantısı */
+.skip-link { position: absolute; left: 12px; top: -64px; z-index: 100; padding: 12px 16px; border-radius: 8px; background: var(--accent); color: #0b1a14; font-weight: 800; text-decoration: none; }
+.skip-link:focus { top: max(12px, env(safe-area-inset-top)); }
+
+/* PWA bantları */
+.pwa-status { display: grid; gap: 8px; margin-bottom: 14px; }
+.pwa-banner { margin: 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-raised); font-size: 13px; line-height: 1.5; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pwa-banner.offline { border-color: var(--amber); color: #f2dcaa; }
+.pwa-banner.update { border-color: var(--accent); }
+
+/* Dokunma hedefi: 44px altı yok */
+.nav-item, .mobile-nav-item, .primary-button, .quiet-button, .glass-button, .subtle-link,
+.askf-download-link, .askf-source-link { min-height: 44px; }
+.subtle-link, .askf-download-link, .askf-source-link { display: inline-flex; align-items: center; }
+
+@media (max-width: 700px), (pointer: coarse) {
+  /* iOS Safari odaklanınca yakınlaştırmasın: girdi yazısı en az 16px */
+  input, select, textarea { font-size: 16px !important; min-height: 44px; }
+  .filter-toolbar input, .filter-toolbar select, .add-row input, .module-search { font-size: 16px; }
+}
+
+@media (max-width: 700px) {
+  /* Okunabilirlik: 8–11px metinleri yükselt */
+  .match-teams strong { font-size: 14px; }
+  .match-teams span, .venue-name, .match-status, .match-time span { font-size: 12px; }
+  .muted-label, .source-panel dt, .source-panel dd, .management-row span, .management-row small { font-size: 12px; }
+  .date-label, .app-footer { font-size: 10px; }
+  .mobile-nav-item { font-size: 11px; }
+  .eyebrow { font-size: 10px; }
+  .filter-toolbar { grid-template-columns: 1fr; padding: 14px 15px; }
+  .poster-export-actions { display: grid; grid-template-columns: 1fr; }
+  /* Sanal klavye açıldığında alt gezinme içeriği kapatmasın */
+  .app-shell { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .main-content { padding-left: max(15px, env(safe-area-inset-left)); padding-right: max(15px, env(safe-area-inset-right)); }
+  .sidebar { padding-top: max(9px, env(safe-area-inset-top)); height: calc(62px + env(safe-area-inset-top)); }
+}
+
+/* Sanal klavye / düşük yükseklik: sabit alt çubuğu gizle */
+@media (max-height: 420px) and (max-width: 900px) { .mobile-nav { position: static; } .app-shell { padding-bottom: 0; } }
+
+@media (forced-colors: active) {
+  .state-pill, .category-pill, .pwa-banner { border: 1px solid CanvasText; }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import AskfReviewPanel from './components/AskfReviewPanel';
+import PwaStatus from './components/PwaStatus';
 import Dashboard from './components/Dashboard';
 import PosterStudio from './components/PosterStudio';
 import NotificationCenter from './components/NotificationCenter';
@@ -247,6 +248,7 @@ function App() {
   }
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Ana içeriğe geç</a>
       <aside className="sidebar" aria-label="Ana gezinme">
         <div className="brand">
           <div className="brand-mark" aria-hidden="true">DG</div>
@@ -263,7 +265,8 @@ function App() {
         <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>KULÜP KOMUTA MERKEZİ</span></div>
       </aside>
 
-      <main className="main-content">
+      <main className="main-content" id="main-content" tabIndex={-1}>
+        <PwaStatus />
         <header className="topbar">
           <div><span className="eyebrow">DARICA GÜCÜ SPOR KULÜBÜ</span><h1>{navigation.find((item) => item.id === screen)?.label}</h1></div>
           <div className="topbar-meta"><span className="environment">V4 PRO</span><span className="date-label">{new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(new Date()).toLocaleUpperCase('tr-TR')}</span><NotificationCenter onNavigate={setScreen}/></div>

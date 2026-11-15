@@ -23,7 +23,7 @@ V4 is under isolated development. The original site and V3 production applicatio
 The first successful V4 Cron execution has not yet been proven. The live official file manager was successfully opened in Edge and its latest `011.HAFTA PROGRAM.xls` file was downloaded (243,200 bytes). That exact workbook is now a parser fixture and passes the V4 parser tests. The Vercel-hosted Playwright + Chromium run must still complete, archive the source workbook and versioned JSON snapshot in the V4 private Blob store, and publish a verified live snapshot.
 
 ## Development
-- Node.js 24+
+- Node.js 22 veya üstü (`package.json` engines)
 - `npm install`
 - `npm run dev`
 - `npm test`
@@ -43,3 +43,27 @@ See `DESIGN.md` and `docs/superpowers/specs/2026-11-11-darica-gucu-mac-merkezi-v
 - Raw workbook and versioned snapshot are archived before the live pointer changes.
 - Secrets remain server-side.
 - V4 is a separate SSO-protected deployment; no original/V3 domain is replaced.
+
+## Zamanlama (cron) nasıl çalışır
+`vercel.json` içindeki tek cron her gün çalışır (`0 15 * * *` UTC = 18:00 Türkiye). Aynı çağrı iki iş yapar:
+1. Günlük maç hatırlatmalarını gönderir.
+2. ASKF programını yalnızca haftalık kapıdan geçince kontrol eder (Salı 18:00, Türkiye saati). Diğer günler ASKF'ye gidilmez.
+Hobby planı günde en fazla bir cron çalıştırır; bu yüzden tek günlük cron kullanılır. Elle kontrol en az 5 dakika arayla yapılabilir. Çalışan bir kontrol kilidi 65 saniye sonra bayat sayılır (fonksiyon süresi 60 sn + 5 sn pay) ve denetim kaydına `stale_lock_recovered` yazılır.
+
+## Telefon kurulumu (PWA)
+- Android Chrome: siteyi aç, "Yükle" bandına veya menüdeki "Ana ekrana ekle"ye dokun.
+- iPhone Safari: Paylaş simgesi, sonra "Ana Ekrana Ekle".
+- Çevrimdışıyken son doğrulanmış program gösterilir; onay, yapay zeka ve indirme uçları asla önbelleğe alınmaz.
+- Yeni sürüm çıkınca "Yeni sürüm hazır" bandı görünür; "Yenile"ye basınca etkinleşir.
+- Dağıtım SSO korumalıdır: ilk açılışta Vercel girişi istenir.
+
+## Yapay zeka (isteğe bağlı, varsayılan kapalı)
+Tek servis katmanı `api/_lib/ai/` altındadır ve yalnızca Claude kullanır. `AI_ENABLED=true`, `ANTHROPIC_API_KEY` ve `AI_MONTHLY_BUDGET_USD` girilmezse hiçbir şey çalışmaz. Kişisel veri (TC, IBAN, telefon, e-posta, anahtar) kapıdan geçemez; yalnızca maç alanları gönderilir. Aylık tavan Blob'da tutulur ve aşılınca durur.
+
+## Sıfırdan yayına alma
+1. Depoyu Vercel'e bağla (Hobby yeterli).
+2. Frankfurt bölgesinde özel bir Blob deposu oluştur ve projeye bağla.
+3. `.env.example` içindeki zorunlu değişkenleri gir (`CRON_SECRET` en az 32 karakter).
+4. Dağıtımın "Ready" olduğunu kontrol et. Hata varsa build günlüğünün son satırlarına bak.
+5. Cron'u Vercel panelinden elle tetikle; `/api/source-status` durumunun `awaiting_first_run`dan çıktığını doğrula.
+6. İlk başarılı kayıttan sonra isteğe bağlı olarak cron saatini 16:00'ya çek (`0 13 * * *`).

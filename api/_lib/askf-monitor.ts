@@ -12,6 +12,7 @@ import {
 } from './blob-store.js';
 import { defaultAskfMonitorSettings, describeAskfSchedule, shouldRunScheduledCheck, type AskfMonitorSettings } from '../../src/ingestion/schedule.js';
 import { parseAskfWorkbook } from '../../src/ingestion/parse-askf.js';
+import { evaluateRunLock, isManualCheckTooSoon } from '../../src/ingestion/lock.js';
 import { stageVerifiedSnapshot, type PendingAskfReview } from '../../src/ingestion/stage-askf.js';
 import type { PreviousPublishedSnapshot, PublishedSnapshot } from '../../src/ingestion/publish.js';
 import { notifyAskfSourceIssue, notifyPendingAskfReview } from './notification-digest.js';
@@ -83,11 +84,15 @@ export async function runAskfCheck(trigger: 'cron' | 'manual'): Promise<AskfChec
       return { status: 'skipped', reason: 'Haftalık kontrol günü değil; bir sonraki Salı 18:00 bekleniyor.' };
     }
     if (pending) return { status: 'pending_exists', pending };
-    const lastAttempt = status?.lastAttempt ? Date.parse(status.lastAttempt) : 0;
-    if (status?.state === 'running' && lastAttempt && attemptedAt.getTime() - lastAttempt < 90 * 1000) {
+    const lockVerdict = evaluateRunLock(status, attemptedAt);
+    if (lockVerdict === 'active') {
       return { status: 'skipped', reason: 'Başka bir ASKF kontrolü devam ediyor.' };
     }
-    if (trigger === 'manual' && lastAttempt && attemptedAt.getTime() - lastAttempt < 5 * 60 * 1000) {
+    if (lockVerdict === 'stale') {
+      // Önceki çalışma zaman aşımıyla yarıda kalmış; kilit bırakıldı ve izi denetim kaydına yazıldı.
+      await writeAudit({ action: 'stale_lock_recovered', trigger, previousAttempt: status?.lastAttempt ?? null });
+    }
+    if (trigger === 'manual' && isManualCheckTooSoon(status?.lastAttempt, attemptedAt)) {
       return { status: 'skipped', reason: 'Güvenli kullanım için manuel kontrol aralığı 5 dakikadır.' };
     }
 
