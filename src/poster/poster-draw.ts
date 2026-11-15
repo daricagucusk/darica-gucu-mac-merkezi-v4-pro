@@ -42,6 +42,16 @@ function drawImageItem(ctx: CanvasRenderingContext2D, item: ImageItem): void {
   const src = item.image as CanvasImageSource & { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number };
   const iw = src.naturalWidth ?? src.width ?? item.w;
   const ih = src.naturalHeight ?? src.height ?? item.h;
+  if (item.fit === 'contain') {
+    const k = Math.min(item.w / iw, item.h / ih);
+    const dw = iw * k;
+    const dh = ih * k;
+    ctx.save();
+    ctx.globalAlpha = item.alpha;
+    ctx.drawImage(item.image, item.x + (item.w - dw) / 2, item.y + (item.h - dh) / 2, dw, dh);
+    ctx.restore();
+    return;
+  }
   const scale = Math.max(item.w / iw, item.h / ih);
   const cw = item.w / scale;
   const ch = item.h / scale;

@@ -1,0 +1,47 @@
+/* Oyuncu yönetimi: Stitch "Oyuncu Fotoğrafı Yükle / Hızlı Avatar Ata" kart dili (surface-container, secondary yeşil). */
+.pm {
+  --pm-surface: #19211e; --pm-low: #151d1a; --pm-high: #232c28; --pm-lowest: #08100d;
+  --pm-on: #dce5df; --pm-muted: #bfc9c0; --pm-primary: #8dd6ae; --pm-secondary: #4ae176; --pm-on-secondary: #08100d;
+  --pm-error: #ffb4ab;
+  display: grid; gap: 12px; min-width: 0; padding: 16px; border-radius: 16px; background: var(--pm-surface);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35); color: var(--pm-on); font-family: Inter, system-ui, sans-serif;
+}
+.pm * { box-sizing: border-box; }
+.pm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pm-head h3 { margin: 0; font: 700 12px/16px Chivo, sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+.pm-head p { margin: 4px 0 0; color: var(--pm-muted); font-size: 12px; line-height: 16px; }
+.pm-count { flex: none; padding: 2px 8px; border-radius: 999px; background: var(--pm-high); color: var(--pm-primary); font: 800 10px/14px Chivo, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.pm-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pm-row { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px; border-radius: 12px; background: var(--pm-low); }
+.pm-row.is-selected { background: #0a5c3d; box-shadow: inset 0 0 0 1px rgba(74, 225, 118, .55); }
+.pm-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--pm-lowest); }
+.pm-avatar-number { display: grid; place-items: center; border: 2px solid var(--pm-secondary); color: var(--pm-secondary); font: 900 16px/1 Chivo, sans-serif; }
+.pm-who { min-width: 0; display: grid; gap: 2px; }
+.pm-who strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 16px/22px Inter, sans-serif; }
+.pm-who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pm-muted); font-size: 12px; line-height: 16px; }
+.pm-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.pm-btn { min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 12px; background: var(--pm-high);
+  color: var(--pm-on); font: 700 12px/16px Chivo, sans-serif; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.pm-btn:disabled, .pm-file.is-busy { opacity: .5; cursor: not-allowed; }
+.pm-btn-on { background: var(--pm-secondary); color: var(--pm-on-secondary); }
+.pm-btn-danger { color: var(--pm-error); }
+.pm-file { position: relative; overflow: hidden; }
+.pm-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0; }
+.pm-form { display: grid; gap: 10px; padding: 12px; border-radius: 12px; background: var(--pm-lowest); }
+.pm-form h4 { margin: 0; font: 700 12px/16px Chivo, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--pm-primary); }
+.pm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pm-wide { grid-column: 1 / -1; }
+.pm-form label { display: grid; gap: 4px; min-width: 0; color: var(--pm-muted); font-size: 12px; }
+.pm-form input, .pm-form select { width: 100%; min-width: 0; min-height: 44px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--pm-high); color: var(--pm-on); font: 400 14px Inter, sans-serif; }
+.pm-form input:focus-visible, .pm-form select:focus-visible { outline: 2px solid var(--pm-secondary); outline-offset: 1px; }
+.pm-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pm-submit { flex: 1 1 140px; min-height: 48px; border: 0; border-radius: 12px; background: var(--pm-secondary); color: var(--pm-on-secondary); font: 700 12px/16px Chivo, sans-serif; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.pm-submit:disabled { opacity: .5; }
+.pm-note { margin: 0; color: var(--pm-muted); font-size: 12px; }
+.pm-error, .pm-ok { margin: 0; padding: 10px 12px; border-radius: 12px; font-size: 12px; line-height: 16px; }
+.pm-error { background: rgba(147, 0, 10, .35); color: #ffdad6; }
+.pm-ok { background: rgba(74, 225, 118, .12); color: var(--pm-secondary); }
+@media (min-width: 720px) {
+  .pm-row { grid-template-columns: 44px minmax(0, 1fr) auto; }
+  .pm-actions { grid-column: auto; grid-template-columns: repeat(5, auto); justify-content: flex-end; }
+}

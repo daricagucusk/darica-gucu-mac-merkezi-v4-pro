@@ -11,6 +11,8 @@ export interface PosterRenderInput {
   photo?: CanvasImageSource | null;
   /** Boş/undefined ise alt sponsor şeridi çizilmez. */
   sponsors?: string[];
+  /** İsteğe bağlı gerçek kulüp arması (public/brand); yoksa çizilen kalkan. */
+  crest?: CanvasImageSource | null;
 }
 
 /** Mevcut API: maç günü / haftalık / sonuç / duyuru, Stitch görünümünde (yerleşim poster-layouts.ts). */

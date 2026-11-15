@@ -732,11 +732,55 @@
     },
     "/api/players": {
       "status": 200,
-      "body": null
+      "body": {
+        "players": [
+          {
+            "id": "test-oyuncu-01",
+            "number": 7,
+            "name": "Test Oyuncu 1",
+            "position": "Orta Saha",
+            "team": "U-14",
+            "hasPhoto": false,
+            "updatedAt": "2026-11-09T07:00:00.000Z"
+          },
+          {
+            "id": "test-oyuncu-02",
+            "number": 10,
+            "name": "Test Oyuncu 2",
+            "position": "Forvet",
+            "team": "U-14",
+            "hasPhoto": false,
+            "updatedAt": "2026-11-09T07:00:00.000Z"
+          }
+        ]
+      }
     },
     "/api/weather": {
       "status": 200,
-      "body": null
+      "body": {
+        "available": false,
+        "source": "Open-Meteo (CC BY 4.0)"
+      }
+    },
+    "POST /api/players": {
+      "status": 200,
+      "body": {
+        "player": {
+          "id": "test-oyuncu-03",
+          "number": 9,
+          "name": "Test Oyuncu 3",
+          "position": "",
+          "team": "U-14",
+          "hasPhoto": false,
+          "updatedAt": "2026-11-09T07:00:00.000Z"
+        }
+      }
+    },
+    "DELETE /api/players": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
     }
   }
 }

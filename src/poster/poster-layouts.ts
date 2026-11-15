@@ -23,6 +23,8 @@ export interface BgItem {
 export interface ImageItem {
   kind: 'image'; role: string; image: CanvasImageSource; x: number; y: number; w: number; h: number;
   shape: 'rect' | 'circle'; alpha: number; overlay?: string;
+  /** Varsayılan 'cover' (kırpar). 'contain': görseli kırpmadan kutuya sığdırır (arma için). */
+  fit?: 'cover' | 'contain';
 }
 export type PosterItem = TextItem | RectItem | CircleItem | ShieldItem | BgItem | ImageItem;
 
@@ -60,6 +62,12 @@ function frameItems(): RectItem[] {
 function framed(height: number): RectItem[] {
   const [a, b] = frameItems();
   return [{ ...a, h: height - 56 }, { ...b, h: height - 76 }];
+}
+
+/** Kulüp arması: crest verilmişse kırpmadan sığdırılan görsel, yoksa çizilen kalkan. */
+function clubCrest(role: string, cx: number, cy: number, r: number, color: string, crest: CanvasImageSource | null | undefined): PosterItem {
+  if (!crest) return { kind: 'shield', role, cx, cy, r, color, monogram: 'DG' };
+  return { kind: 'image', role, image: crest, x: cx - r * 1.2, y: cy - r * 1.1, w: r * 2.4, h: r * 2.4, shape: 'rect', alpha: 1, fit: 'contain' };
 }
 
 export function sponsorLabel(sponsors: readonly string[]): string {
@@ -120,6 +128,8 @@ export interface ShortsInput {
   handle?: string;
   sponsors?: string[];
   background?: CanvasImageSource | null;
+  /** İsteğe bağlı gerçek kulüp arması; yoksa çizilen kalkan. */
+  crest?: CanvasImageSource | null;
 }
 
 export function layoutShortsCover(input: ShortsInput, measure: Measure): PosterLayout {
@@ -137,7 +147,7 @@ export function layoutShortsCover(input: ShortsInput, measure: Measure): PosterL
   items.push({ kind: 'rect', role: 'badge-pill', x: w / 2 - 240, y: 300, w: 480, h: 60, radius: 30, fill: 'rgba(0, 0, 0, 0.75)', stroke: t.accent, strokeWidth: 3 });
   items.push(fitText({ role: 'badge', text: input.badge, x: w / 2, y: 340, maxWidth: 430, size: 24, minSize: 14, weight: 900, color: '#ffffff' }, measure));
 
-  items.push({ kind: 'shield', role: 'crest', cx: w / 2, cy: 500, r: 130, color: t.shield, monogram: 'DG' });
+  items.push(clubCrest('crest', w / 2, 515, 130, t.shield, input.crest));
 
   const hookLines = wrapText({
     role: 'hook', text: input.hook, x: w / 2, y: 760, maxWidth: 900, size: 68, weight: 900, color: '#ffffff',
@@ -160,7 +170,7 @@ export function layoutShortsCover(input: ShortsInput, measure: Measure): PosterL
   const ctaY = cardY + 340 + 40;
   items.push({ kind: 'rect', role: 'cta-pill', x: 140, y: ctaY, w: w - 280, h: 100, radius: 25, fill: 'rgba(0, 0, 0, 0.8)', stroke: '#ffffff', strokeWidth: 2 });
   items.push(fitText({ role: 'cta', text: input.cta?.trim() || '▶ İZLEMEK İÇİN DOKUNUN', x: w / 2, y: ctaY + 60, maxWidth: w - 340, size: 28, minSize: 16, weight: 900, color: '#ffffff', upper: true }, measure));
-  items.push(fitText({ role: 'handle', text: input.handle?.trim() || '@daricagucuspor • #DarıcaGücüSK', x: w / 2, y: ctaY + 60 + 60, maxWidth: 900, size: 24, minSize: 14, weight: 800, family: FONT_BODY, color: '#ffffff' }, measure));
+  items.push(fitText({ role: 'handle', text: input.handle?.trim() || '@daricagucuspor • #DarıcaGücüSK', x: w / 2, y: ctaY + 140, maxWidth: 900, size: 24, minSize: 14, weight: 800, family: FONT_BODY, color: '#ffffff' }, measure));
 
   items.push(...sponsorStrip(input.sponsors, h - 250, false, measure));
   return { width: w, height: h, safe: SAFE_SHORTS, items };
@@ -184,6 +194,7 @@ export interface StoryAInput {
   weather?: Weather | null;
   sponsors?: string[];
   photo?: CanvasImageSource | null;
+  crest?: CanvasImageSource | null;
 }
 
 const two = (n: number): string => String(Math.max(0, Math.trunc(n))).padStart(2, '0');
@@ -195,7 +206,7 @@ export function layoutStoryA(input: StoryAInput, measure: Measure): PosterLayout
     items.push({ kind: 'image', role: 'photo', image: input.photo, x: 0, y: 0, w: W, h, shape: 'rect', alpha: 1, overlay: 'rgba(8, 16, 13, 0.68)' });
   }
   items.push(...framed(h));
-  items.push({ kind: 'shield', role: 'crest', cx: W / 2, cy: 200, r: 130, color: '#0a5c3d', monogram: 'DG' });
+  items.push(clubCrest('crest', W / 2, 200, 130, '#0a5c3d', input.crest));
 
   const wx = input.weather;
   if (wx && Number.isFinite(wx.tempC) && wx.label.trim()) {
@@ -249,12 +260,13 @@ export interface StoryCInput {
   score?: { home: number; away: number } | null;
   mvp?: MvpInput | null;
   sponsors?: string[];
+  crest?: CanvasImageSource | null;
 }
 
 export function layoutStoryC(input: StoryCInput, measure: Measure): PosterLayout {
   const h = 1920;
   const items: PosterItem[] = [background(W, h), ...framed(h)];
-  items.push({ kind: 'shield', role: 'crest', cx: W / 2, cy: 300, r: 140, color: '#0a5c3d', monogram: 'DG' });
+  items.push(clubCrest('crest', W / 2, 300, 140, '#0a5c3d', input.crest));
 
   const hasScore = !!input.score && Number.isInteger(input.score.home) && Number.isInteger(input.score.away);
   if (hasScore && input.score) {
@@ -300,6 +312,7 @@ export interface FeedInput {
   copy: PosterCopy;
   sponsors?: string[];
   photo?: CanvasImageSource | null;
+  crest?: CanvasImageSource | null;
 }
 
 function pillAround(role: string, text: string, y: number, color: string, measure: Measure, size: number): PosterItem[] {
@@ -345,7 +358,9 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
     const sides: Array<[number, string, string]> = [[270, home, 'EV SAHİBİ'], [810, away, 'DEPLASMAN']];
     for (const [cx, name, label] of sides) {
       const club = trUpper(name).includes('DARICA GÜCÜ');
-      items.push({ kind: 'shield', role: 'crest', cx, cy: crestY, r: 80, color: club ? '#0a5c3d' : '#334155', monogram: club ? 'DG' : '' });
+      items.push(club
+        ? clubCrest('crest', cx, crestY, 80, '#0a5c3d', input.crest)
+        : { kind: 'shield', role: 'crest', cx, cy: crestY, r: 80, color: '#334155', monogram: '' });
       items.push(fitText({ role: 'team', text: name, x: cx, y: crestY + 135, maxWidth: 420, size: 34, minSize: 16, weight: 900, color: club ? C.bright : '#ffffff', upper: true }, measure));
       items.push(fitText({ role: 'team-label', text: label, x: cx, y: crestY + 172, maxWidth: 420, size: 20, minSize: 12, weight: 600, family: FONT_BODY, color: C.slate }, measure));
     }
@@ -363,7 +378,7 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
     if (group) items.push(fitText({ role: 'group', text: group, x: W / 2, y: crestY + 210, maxWidth: 900, size: 28, minSize: 16, weight: 700, color: C.gold, upper: true }, measure));
   } else if (t === 'weekly-program') {
     const compact = square;
-    if (!compact) items.push({ kind: 'shield', role: 'crest', cx: W / 2, cy: top + 60, r: 60, color: '#0a5c3d', monogram: 'DG' });
+    if (!compact) items.push(clubCrest('crest', W / 2, top + 60, 60, '#0a5c3d', input.crest));
     const base = compact ? top : top + 150;
     items.push(fitText({ role: 'brand', text: 'DARICA GÜCÜ SK', x: W / 2, y: base + (compact ? 70 : 60), maxWidth: 920, size: 56, minSize: 30, weight: 900, color: '#ffffff' }, measure));
     items.push(fitText({ role: 'headline', text: input.copy.headline, x: W / 2, y: base + (compact ? 118 : 110), maxWidth: 920, size: 30, minSize: 16, weight: 900, color: C.bright, upper: true }, measure));
@@ -385,7 +400,7 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
     });
   } else {
     items.push(...pillAround('brand-pill', 'DARICA GÜCÜ SPOR KULÜBÜ', top, C.bright, measure, 22));
-    items.push({ kind: 'shield', role: 'crest', cx: W / 2, cy: crestY - 70, r: 100, color: '#0a5c3d', monogram: 'DG' });
+    items.push(clubCrest('crest', W / 2, crestY - 70, 100, '#0a5c3d', input.crest));
     const lines = wrapText({ role: 'headline', text: input.copy.headline, x: W / 2, y: crestY + 130, maxWidth: 900, size: 72, weight: 900, color: '#ffffff', lineHeight: 84, maxLines: 3, upper: true }, measure);
     items.push(...lines);
     const subLines = wrapText({ role: 'subtitle', text: input.copy.subtitle, x: W / 2, y: crestY + 130 + lines.length * 84 + 10, maxWidth: 900, size: 32, weight: 800, color: C.gold, lineHeight: 44, maxLines: 2, upper: true }, measure);
