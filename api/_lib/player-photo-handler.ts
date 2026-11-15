@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 import { get } from '@vercel/blob';
 import { Readable } from 'node:stream';
-import { writeBytes } from './_lib/blob-store.js';
-import type { ApiRequest, ApiResponse } from './_lib/http.js';
-import { assertSameOrigin } from './_lib/request-security.js';
-import { deletePhotoBlob, readRoster, writeRoster } from './_lib/players-store.js';
-import { isSafePlayerId, MAX_PHOTO_BYTES, photoKeyFor, validatePhoto } from '../src/players/model.js';
+import { writeBytes } from './blob-store.js';
+import type { ApiRequest, ApiResponse } from './http.js';
+import { assertSameOrigin } from './request-security.js';
+import { deletePhotoBlob, readRoster, writeRoster } from './players-store.js';
+import { isSafePlayerId, MAX_PHOTO_BYTES, photoKeyFor, validatePhoto } from '../../src/players/model.js';
 
 function noStore(res: ApiResponse): void {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');

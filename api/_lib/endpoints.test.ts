@@ -8,9 +8,10 @@ vi.mock('@vercel/blob', () => ({
   del: (p: string | string[]) => mem.del(p),
 }));
 
-const { default: players } = await import('../players');
-const { default: photo } = await import('../player-photo');
-const { default: weather } = await import('../weather');
+const { default: media } = await import('../media');
+const players = media;
+const photo = media;
+const weather = media;
 const { clearWeatherCache } = await import('./weather');
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3]);
@@ -20,7 +21,10 @@ type Handler = (req: never, res: never) => Promise<void>;
 
 async function call(handler: unknown, opts: Parameters<typeof fakeReq>[0]) {
   const r = fakeRes();
-  await (handler as Handler)(fakeReq(opts) as never, r.res as never);
+  // vercel.json rewrites'ı taklit: /api/<ad>?x=1 -> /api/media?resource=<ad>&x=1 (sorgu birleşir).
+  const m = /^\/api\/([a-z-]+)(?:\?(.*))?$/.exec(opts.url);
+  const url = m && m[1] !== 'media' ? `/api/media?resource=${m[1]}${m[2] ? `&${m[2]}` : ''}` : opts.url;
+  await (handler as Handler)(fakeReq({ ...opts, url }) as never, r.res as never);
   await Promise.race([r.done, new Promise((x) => setTimeout(x, 100))]);
   return r;
 }
@@ -149,5 +153,26 @@ describe('/api/weather', () => {
     const p = await call(weather, { method: 'POST', url: '/api/weather' });
     expect(p.code()).toBe(405);
     noStore(p);
+  });
+});
+
+describe('/api/media dağıtıcı ve rewrites', () => {
+  it('bilinmeyen veya eksik resource 404 (no-store)', async () => {
+    for (const url of ['/api/media?resource=nope', '/api/media', '/api/media?resource=constructor', '/api/media?resource=__proto__']) {
+      const r = await call(media, { method: 'GET', url });
+      expect(r.code()).toBe(404);
+      noStore(r);
+    }
+  });
+  it('vercel.json rewrites dış URL sözleşmesini korur, mevcut headers/crons yerinde', async () => {
+    const { readFileSync } = await import('node:fs');
+    const cfg = JSON.parse(readFileSync(new URL('../../vercel.json', import.meta.url), 'utf8'));
+    expect(cfg.rewrites).toEqual([
+      { source: '/api/players', destination: '/api/media?resource=players' },
+      { source: '/api/player-photo', destination: '/api/media?resource=player-photo' },
+      { source: '/api/weather', destination: '/api/media?resource=weather' },
+    ]);
+    expect(cfg.crons).toHaveLength(1);
+    expect(cfg.headers.length).toBeGreaterThan(0);
   });
 });

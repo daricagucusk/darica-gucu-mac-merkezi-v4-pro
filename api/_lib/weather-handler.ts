@@ -1,5 +1,5 @@
-import type { ApiRequest, ApiResponse } from './_lib/http.js';
-import { getWeatherCached, unavailable, type FetchLike } from './_lib/weather.js';
+import type { ApiRequest, ApiResponse } from './http.js';
+import { getWeatherCached, unavailable, type FetchLike } from './weather.js';
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
   res.setHeader('X-Content-Type-Options', 'nosniff');

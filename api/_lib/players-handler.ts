@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
-import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './_lib/http.js';
-import { assertSameOrigin, readJsonBody } from './_lib/request-security.js';
-import { deletePhotoBlob, readRoster, writeRoster } from './_lib/players-store.js';
-import { isSafePlayerId, removePlayer, toPublicPlayer, upsertPlayer, type PlayerInput } from '../src/players/model.js';
+import { setNoStoreHeaders, type ApiRequest, type ApiResponse } from './http.js';
+import { assertSameOrigin, readJsonBody } from './request-security.js';
+import { deletePhotoBlob, readRoster, writeRoster } from './players-store.js';
+import { isSafePlayerId, removePlayer, toPublicPlayer, upsertPlayer, type PlayerInput } from '../../src/players/model.js';
 
 // Yalnız id ve sayı loglanır; ad/foto içeriği asla.
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
