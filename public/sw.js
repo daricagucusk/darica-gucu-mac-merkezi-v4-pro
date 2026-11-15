@@ -4,7 +4,7 @@
  *  - Gezinme: ağ öncelikli, çevrimdışıysa önbellekteki uygulama kabuğu ("/").
  *  - /assets/* (içerik özetli dosyalar): önbellek öncelikli, değişmez.
  *  - /api/live ve /api/source-status: ağ öncelikli, çevrimdışıysa SON DOĞRULANMIŞ kopya.
- *  - Diğer tüm /api/* (onay, AI, bildirim, indirme): asla önbelleğe alınmaz.
+ *  - Diğer tüm /api/* (onay, AI, bildirim, indirme, oyuncu, oyuncu fotoğrafı, hava): asla önbelleğe alınmaz.
  * Yeni sürüm kendiliğinden devreye girmez; kullanıcı "Yenile" deyince SKIP_WAITING gelir.
  */
 const CACHE_VERSION = 'v5-1';
