@@ -133,6 +133,8 @@ async function main() {
     results.push(await saveCanvas(page, 'story-a-sponsors'));
     await page.getByLabel('Sponsor bandı').uncheck();
     await click(page, /^C ·/, false);
+    await page.getByLabel(/ skoru$/).nth(0).fill('');
+    await page.getByLabel(/ skoru$/).nth(1).fill('');
     results.push(await saveCanvas(page, 'story-c-no-score-no-mvp'));
     await page.getByLabel(/ skoru$/).nth(0).fill('3');
     await page.getByLabel(/ skoru$/).nth(1).fill('1');

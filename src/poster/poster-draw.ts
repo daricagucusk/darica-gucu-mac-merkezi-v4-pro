@@ -47,9 +47,23 @@ function drawImageItem(ctx: CanvasRenderingContext2D, item: ImageItem): void {
     const dw = iw * k;
     const dh = ih * k;
     ctx.save();
+    if (item.radius) {
+      ctx.beginPath();
+      ctx.roundRect(item.x, item.y, item.w, item.h, item.radius);
+      ctx.clip();
+    }
     ctx.globalAlpha = item.alpha;
     ctx.drawImage(item.image, item.x + (item.w - dw) / 2, item.y + (item.h - dh) / 2, dw, dh);
     ctx.restore();
+    if (item.radius && item.stroke) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(item.x, item.y, item.w, item.h, item.radius);
+      ctx.strokeStyle = item.stroke;
+      ctx.lineWidth = item.strokeWidth ?? 3;
+      ctx.stroke();
+      ctx.restore();
+    }
     return;
   }
   const scale = Math.max(item.w / iw, item.h / ih);

@@ -49,3 +49,15 @@ describe('isteğe bağlı kulüp arması', () => {
     expect(shieldCrests(feed)[0].monogram).toBe('');
   });
 });
+
+describe('Hikaye C skor kuralı', () => {
+  it('skor girilmediyse skor ve sonuç etiketi öğesi çizilmez', () => {
+    const layout = layoutStoryC({ home: 'A', away: 'B', score: null }, measure);
+    expect(layout.items.some((i) => i.role === 'score' || i.role === 'result-label')).toBe(false);
+  });
+  it('skor girilince yalnız girilen değer çizilir', () => {
+    const layout = layoutStoryC({ home: 'A', away: 'B', score: { home: 4, away: 2 } }, measure);
+    const score = layout.items.find((i) => i.role === 'score');
+    expect(score && score.kind === 'text' ? score.text : '').toBe('4 — 2');
+  });
+});

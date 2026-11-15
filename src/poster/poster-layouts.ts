@@ -25,6 +25,8 @@ export interface ImageItem {
   shape: 'rect' | 'circle'; alpha: number; overlay?: string;
   /** Varsayılan 'cover' (kırpar). 'contain': görseli kırpmadan kutuya sığdırır (arma için). */
   fit?: 'cover' | 'contain';
+  /** Logo karosu: köşe yuvarlama ve ince çerçeve (arma kutusu). */
+  radius?: number; stroke?: string; strokeWidth?: number;
 }
 export type PosterItem = TextItem | RectItem | CircleItem | ShieldItem | BgItem | ImageItem;
 
@@ -67,7 +69,10 @@ function framed(height: number): RectItem[] {
 /** Kulüp arması: crest verilmişse kırpmadan sığdırılan görsel, yoksa çizilen kalkan. */
 function clubCrest(role: string, cx: number, cy: number, r: number, color: string, crest: CanvasImageSource | null | undefined): PosterItem {
   if (!crest) return { kind: 'shield', role, cx, cy, r, color, monogram: 'DG' };
-  return { kind: 'image', role, image: crest, x: cx - r * 1.2, y: cy - r * 1.1, w: r * 2.4, h: r * 2.4, shape: 'rect', alpha: 1, fit: 'contain' };
+  return {
+    kind: 'image', role, image: crest, x: cx - r * 1.2, y: cy - r * 1.15, w: r * 2.4, h: r * 2.4, shape: 'rect', alpha: 1, fit: 'contain',
+    radius: r * 0.38, stroke: 'rgba(74, 225, 118, 0.75)', strokeWidth: 4,
+  };
 }
 
 export function sponsorLabel(sponsors: readonly string[]): string {
@@ -147,7 +152,7 @@ export function layoutShortsCover(input: ShortsInput, measure: Measure): PosterL
   items.push({ kind: 'rect', role: 'badge-pill', x: w / 2 - 240, y: 300, w: 480, h: 60, radius: 30, fill: 'rgba(0, 0, 0, 0.75)', stroke: t.accent, strokeWidth: 3 });
   items.push(fitText({ role: 'badge', text: input.badge, x: w / 2, y: 340, maxWidth: 430, size: 24, minSize: 14, weight: 900, color: '#ffffff' }, measure));
 
-  items.push(clubCrest('crest', w / 2, 515, 130, t.shield, input.crest));
+  items.push(clubCrest('crest', w / 2, 535, 110, t.shield, input.crest));
 
   const hookLines = wrapText({
     role: 'hook', text: input.hook, x: w / 2, y: 760, maxWidth: 900, size: 68, weight: 900, color: '#ffffff',
@@ -361,8 +366,8 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
       items.push(club
         ? clubCrest('crest', cx, crestY, 80, '#0a5c3d', input.crest)
         : { kind: 'shield', role: 'crest', cx, cy: crestY, r: 80, color: '#334155', monogram: '' });
-      items.push(fitText({ role: 'team', text: name, x: cx, y: crestY + 135, maxWidth: 420, size: 34, minSize: 16, weight: 900, color: club ? C.bright : '#ffffff', upper: true }, measure));
-      items.push(fitText({ role: 'team-label', text: label, x: cx, y: crestY + 172, maxWidth: 420, size: 20, minSize: 12, weight: 600, family: FONT_BODY, color: C.slate }, measure));
+      items.push(fitText({ role: 'team', text: name, x: cx, y: crestY + 162, maxWidth: 420, size: 34, minSize: 16, weight: 900, color: club ? C.bright : '#ffffff', upper: true }, measure));
+      items.push(fitText({ role: 'team-label', text: label, x: cx, y: crestY + 198, maxWidth: 420, size: 20, minSize: 12, weight: 600, family: FONT_BODY, color: C.slate }, measure));
     }
     items.push({ kind: 'circle', role: 'vs-circle', cx: W / 2, cy: crestY, r: 48, fill: C.gold });
     items.push(fitText({ role: 'vs', text: 'VS', x: W / 2, y: crestY + 12, maxWidth: 80, size: 34, weight: 900, color: C.pitch950 }, measure));
@@ -375,7 +380,7 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
     const [home = '', scoreText = '', away = '', group = ''] = d;
     items.push(fitText({ role: 'score', text: scoreText, x: W / 2, y: crestY + 60, maxWidth: 900, size: 130, minSize: 60, weight: 900, color: '#ffffff' }, measure));
     items.push(fitText({ role: 'teams', text: `${home} vs ${away}`, x: W / 2, y: crestY + 150, maxWidth: 940, size: 42, minSize: 18, weight: 800, color: C.bright, upper: true }, measure));
-    if (group) items.push(fitText({ role: 'group', text: group, x: W / 2, y: crestY + 210, maxWidth: 900, size: 28, minSize: 16, weight: 700, color: C.gold, upper: true }, measure));
+    if (group && trUpper(group) !== trUpper(input.copy.subtitle)) items.push(fitText({ role: 'group', text: group, x: W / 2, y: crestY + 210, maxWidth: 900, size: 28, minSize: 16, weight: 700, color: C.gold, upper: true }, measure));
   } else if (t === 'weekly-program') {
     const compact = square;
     if (!compact) items.push(clubCrest('crest', W / 2, top + 60, 60, '#0a5c3d', input.crest));
