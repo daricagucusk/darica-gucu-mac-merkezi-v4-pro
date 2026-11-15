@@ -8,3 +8,6 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
+
+# Stitch ekran görüntüleri (scripts/stitch-shots.mjs)
+artifacts/
