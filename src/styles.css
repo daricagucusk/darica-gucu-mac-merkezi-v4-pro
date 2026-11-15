@@ -762,3 +762,9 @@ h1 { font-size: clamp(25px, 2.4vw, 34px); font-weight: 800; letter-spacing: -1.4
 }
 
 .poster-score-warning { margin:6px 0 0; padding:9px 10px; border-left:2px solid var(--amber); background:rgba(247,185,85,.07); color:#f4ca83; font-size:9px; line-height:1.5; }
+
+/* --- AI yardımcı kartı --- */
+.ai-assist { margin: 14px 0; display: grid; gap: 10px; }
+.ai-assist-result { padding: 12px 14px; border-left: 2px solid var(--accent); background: #1a2630; border-radius: 4px; }
+.ai-assist-result p { margin: 6px 0 0; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ai-assist-result small { color: var(--muted); font-size: 11px; }
