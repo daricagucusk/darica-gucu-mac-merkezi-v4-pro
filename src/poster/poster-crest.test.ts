@@ -40,6 +40,10 @@ describe('isteğe bağlı kulüp arması', () => {
       expect(imgs).toHaveLength(1);
       expect(imgs[0].fit).toBe('contain');
       expect(imgs[0].w).toBe(imgs[0].h);
+      // Arma şeffaf PNG: beyaz zemin yok; Stitch karosu koyu zemin + yeşil çerçeve ile çizilir.
+      expect(imgs[0].fill).toMatch(/^rgba\(6, 16, 12/);
+      expect(imgs[0].stroke).toContain('74, 225, 118');
+      expect(imgs[0].inset ?? 0).toBeGreaterThan(0);
     }
   });
 

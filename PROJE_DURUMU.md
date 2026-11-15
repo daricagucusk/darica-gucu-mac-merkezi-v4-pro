@@ -4,7 +4,7 @@ Son güncelleme: 2026-11-15 · Dal: `gelistirme/v6-medya-studyosu` (taban `devel
 
 ## Biten (v6 Medya Stüdyosu, 4 aşama — bağımsız denetim: GEÇTİ)
 - Aşama 1: Maç Ajandası, kabuk, değişiklik/veli uyarı, veli takvim (.ics), ASKF Veri Merkezi, bildirim çekmecesi Stitch'e hizalandı. Yalnız gerçek veri; sahte rozet/hava/harita yok.
-- Aşama 2: Afiş motoru — Shorts/TikTok kapak (YouTube Kırmızı, TikTok Mor, Darıca Zümrüt), Hikaye A (geri sayım + hava), Hikaye C (MVP + girilen skor), 4:5 maç günü/haftalık/sonuç/duyuru, sponsor şeridi, Chivo/Inter `document.fonts.load`, gerçek arma karosu.
+- Aşama 2: Afiş motoru — Shorts / Reels kapak (YouTube Kırmızı, Darıca Zümrüt), Hikaye A (geri sayım + hava), Hikaye C (MVP + girilen skor), 4:5 maç günü/haftalık/sonuç/duyuru, sponsor şeridi, Chivo/Inter `document.fonts.load`, gerçek arma (şeffaf PNG, Stitch karosunda).
 - Aşama 3: Oyuncu kaydı + fotoğraf (private Blob, istemcide 600px JPEG küçültme), MVP afişinde kullanım. Kadro tahtası yok.
 - Aşama 4: Geri sayım (Europe/Istanbul, geçmişte gizli), Open-Meteo hava (sunucu önbellekli, alınamazsa gizli), sponsor kayan bandı.
 - Altyapı: `npm run shots -- --compare` (Stitch yan yana karşılaştırma), `node scripts/poster-shots.mjs` (afiş PNG'leri). API kökü 12 fonksiyon (medya uçları `api/media.ts` + rewrites).
@@ -18,11 +18,13 @@ typecheck temiz · `npm test` 27 dosya / 193 test geçti (eski 97 dahil) · `vit
 2. Gerçek Blob ile oyuncu/fotoğraf uçtan uca deneme (preview'da).
 3. Gerçek Z Fold7 cihaz kontrolü.
 
+## Sahibin kararı (2026-11-15, işlendi)
+- Sponsorlar gerçek liste (Arapçeşme Diş, Kanatçı Nizam, Doğanay Raf), `approvedByOwner:true`; afiş şeridi varsayılan açık.
+- Kulüp sosyal medyası: yalnız Instagram/YouTube/WhatsApp; ilgisiz platform temaları yok. Shorts temaları: YouTube Kırmızı, Darıca Zümrüt.
+- Yeni resmi arma işlendi (`node scripts/brand-assets.mjs`: şeffaf arma, PWA ikonları, favicon, sponsor logoları).
+
 ## Sahibin kararı gerekenler
-- Sponsor listesi (şu an prototip adları, `approvedByOwner:false`; afiş bandı varsayılan kapalı, ana ekran kayan bandı açık).
 - Hava kaynağı onayı: Open-Meteo, anahtarsız, CC BY 4.0 (atıf ekranda).
-- TikTok Mor teması: prototip moru (#d946ef) mı, Stitch ikonundaki camgöbeği/pembe mi.
-- Şeffaf arka planlı arma dosyası (şu an beyaz zeminli PNG, çerçeveli karo içinde).
 - Oyuncu uçları uygulama içi kimlik doğrulama içermez; Vercel SSO koruması kapatılmamalı.
 
 Birleştirme ve production yayını YAPILMADI (sahibin kararı).

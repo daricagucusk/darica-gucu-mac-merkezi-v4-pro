@@ -11,3 +11,6 @@ Thumbs.db
 
 # Stitch ekran görüntüleri (scripts/stitch-shots.mjs)
 artifacts/
+
+# Sponsor kaynak dosyaları (çocuk oyuncu takım fotoğrafları içerir; repoya girmez)
+sponsorlar/

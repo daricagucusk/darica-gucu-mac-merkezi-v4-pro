@@ -78,7 +78,7 @@ describe('metin yardımcıları', () => {
   });
 });
 
-describe('Shorts / TikTok kapak', () => {
+describe('Shorts / Reels kapak', () => {
   const base = { hook: 'Nefes kesen derbi', badge: 'MAÇ ÖZETİ', home: 'Darıca Gücü SK', away: 'Gebze Spor' };
 
   it('1080x1920, güvenli alan (üst 288 / alt 384) içinde', () => {
@@ -91,11 +91,11 @@ describe('Shorts / TikTok kapak', () => {
     }
   });
 
-  it('3 tema farklı ana renk üretir ve referans hex ile eşleşir', () => {
+  it('yalnız 2 tema (YouTube Kırmızı, Darıca Zümrüt); başka platform teması yok; farklı ana renk, referans hex ile eşleşir', () => {
+    expect(Object.keys(SHORTS_THEMES).sort()).toEqual(['club-emerald', 'youtube-red']);
     // Kaynak: prototip-index.txt renderShortsCover (badgeColor ve gradyan durakları).
     const expected: Record<ShortsThemeId, { accent: string; mid: string }> = {
       'youtube-red': { accent: '#ef4444', mid: '#850d0d' },
-      'tiktok-purple': { accent: '#d946ef', mid: '#58117d' },
       'club-emerald': { accent: '#10b981', mid: '#0a422b' },
     };
     const accents = new Set<string>();
@@ -107,7 +107,7 @@ describe('Shorts / TikTok kapak', () => {
       expect(chip && chip.kind === 'rect' && chip.fill).toBe(expected[theme].accent);
       accents.add(expected[theme].accent);
     }
-    expect(accents.size).toBe(3);
+    expect(accents.size).toBe(2);
   });
 
   it('skor/sahte sayı yok; ğüşöçıİ büyütme doğru; uzun ad taşmaz', () => {
@@ -122,9 +122,9 @@ describe('Shorts / TikTok kapak', () => {
     for (const sponsors of [undefined, [], ['  ']]) {
       expect(roles(layoutShortsCover({ ...base, theme: 'club-emerald', sponsors }, measure))).not.toContain('sponsor-strip');
     }
-    const withS = layoutShortsCover({ ...base, theme: 'club-emerald', sponsors: ['Marmara Diş', 'Çınaraltı Kafe'] }, measure);
+    const withS = layoutShortsCover({ ...base, theme: 'club-emerald', sponsors: ['Kanatçı Nizam', 'Doğanay Raf'] }, measure);
     expect(roles(withS)).toContain('sponsor-strip');
-    expect(texts(withS).find((t) => t.role === 'sponsor-text')?.text).toBe('★ MARMARA DİŞ  •  ÇINARALTI KAFE ★');
+    expect(texts(withS).filter((t) => t.role === 'sponsor-name').map((t) => t.text)).toEqual(['KANATÇI NİZAM', 'DOĞANAY RAF']);
     expectInsideSafeArea(withS);
   });
 });
@@ -254,7 +254,7 @@ describe('4:5 şablonlar (maç günü, haftalık program, sonuç, duyuru)', () =
 });
 
 describe('katalog', () => {
-  it('7 şablon, doğru boyutlar, 3 Shorts teması', () => {
+  it('7 şablon, doğru boyutlar, 2 Shorts teması', () => {
     expect(POSTER_CATALOG.map((e) => e.id)).toEqual([
       'shorts-cover', 'story-a', 'story-c', 'matchday-45', 'weekly-program-45', 'result-45', 'announcement-45',
     ]);
@@ -262,6 +262,55 @@ describe('katalog', () => {
       expect(entry.width).toBe(1080);
       expect(entry.height).toBe(entry.aspect === '9:16' ? 1920 : 1350);
     }
-    expect(POSTER_CATALOG[0].themes?.map((t) => t.id)).toEqual(['youtube-red', 'tiktok-purple', 'club-emerald']);
+    expect(POSTER_CATALOG[0].themes?.map((t) => t.id)).toEqual(['youtube-red', 'club-emerald']);
+    expect(POSTER_CATALOG[0].name).toBe('Shorts / Reels Kapak');
+  });
+});
+
+describe('sponsor şeridi: logolar ve ad geri dönüşü', () => {
+  const logo = { width: 230, height: 256 } as unknown as CanvasImageSource;
+  const wide = { width: 197, height: 70 } as unknown as CanvasImageSource;
+  const sponsors = [
+    { name: 'Arapçeşme Diş', sub: '@arapcesmedis', logo: wide },
+    { name: 'Kanatçı Nizam', sub: '@kanatcinizam', logo },
+    { name: 'Doğanay Raf', sub: 'Forma Sponsoru' },
+  ];
+  const imgs = (l: PosterLayout) => l.items.filter((i) => i.kind === 'image' && i.role === 'sponsor-logo');
+  const names = (l: PosterLayout) => texts(l).filter((t) => t.role === 'sponsor-name').map((t) => t.text);
+
+  it('logolu sponsor için logo görseli + ad; logosuz için yalnız ad rozeti', () => {
+    const l = layoutStoryA({ ...storyA, sponsors }, measure);
+    expect(imgs(l)).toHaveLength(2);
+    expect(names(l)).toEqual(['ARAPÇEŞME DİŞ', 'KANATÇI NİZAM', 'DOĞANAY RAF']);
+    expect(texts(l).filter((t) => t.role === 'sponsor-sub').map((t) => t.text)).toEqual(['@arapcesmedis', '@kanatcinizam', 'FORMA SPONSORU']);
+    expectInsideSafeArea(l);
+  });
+
+  it('logo yüklenemezse (null) görsel yerine sponsor adı yazı rozeti çizilir', () => {
+    const failed = sponsors.map((s) => ({ ...s, logo: null }));
+    const l = layoutStoryA({ ...storyA, sponsors: failed }, measure);
+    expect(imgs(l)).toHaveLength(0);
+    expect(names(l)).toHaveLength(3);
+    expect(names(l)[1]).toBe('KANATÇI NİZAM');
+  });
+
+  it('tüm şablonlarda şerit taşmaz ve boş liste şerit üretmez', () => {
+    for (const request of feedRequests({}, undefined).map((r) => ({ ...r, input: { ...r.input, sponsors } }) as PosterTemplateRequest)) {
+      const l = layoutPosterTemplate(request, measure);
+      expect(roles(l), request.id).toContain('sponsor-strip');
+      expectInsideSafeArea(l);
+    }
+    expect(roles(layoutStoryC({ home: 'A', away: 'B', sponsors: [] }, measure))).not.toContain('sponsor-strip');
+    expect(roles(layoutShortsCover({ hook: 'x', badge: 'y', home: 'A', away: 'B', theme: 'youtube-red', sponsors }, measure))).toContain('sponsor-strip');
+  });
+
+  it('4:5 maç günü: şerit, davet hapı ve alt bilgiyle çakışmaz', () => {
+    const l = layoutPosterTemplate(feedRequests({}, undefined).map((r) => ({ ...r, input: { ...r.input, sponsors } }) as PosterTemplateRequest)[0], measure);
+    const strip = l.items.find((i) => i.role === 'sponsor-strip');
+    const pill = l.items.find((i) => i.role === 'invite-pill');
+    const footer = texts(l).find((t) => t.role === 'footer-left');
+    if (!strip || strip.kind !== 'rect' || !pill || pill.kind !== 'rect' || !footer) throw new Error('öğe eksik');
+    expect(pill.y + pill.h).toBeLessThanOrEqual(strip.y);
+    expect(strip.y + strip.h).toBeLessThanOrEqual(footer.box.y);
   });
 });

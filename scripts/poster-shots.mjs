@@ -143,7 +143,7 @@ async function main() {
     // Shorts
     await click(page, /^Shorts/, false);
     await page.getByLabel('Kapak başlığı').fill('Şampiyonluk Yolunda: Ğ Ü Ş İ Ö Ç');
-    for (const [name, id] of [['Darıca Zümrüt', 'shorts-club-emerald'], ['YouTube Kırmızı', 'shorts-youtube-red'], ['TikTok Mor', 'shorts-tiktok-purple']]) {
+    for (const [name, id] of [['Darıca Zümrüt', 'shorts-club-emerald'], ['YouTube Kırmızı', 'shorts-youtube-red']]) {
       await click(page, name, false);
       results.push(await saveCanvas(page, id));
     }

@@ -2,7 +2,7 @@ import type { PosterCopy, PosterFormat, PosterTemplate } from './poster-utils';
 import { getPosterDimensions } from './poster-utils';
 import { ensurePosterFonts } from './fonts';
 import { canvasMeasure, drawLayout } from './poster-draw';
-import { layoutFeedPoster } from './poster-layouts';
+import { layoutFeedPoster, type SponsorInput } from './poster-layouts';
 
 export interface PosterRenderInput {
   format: PosterFormat;
@@ -10,7 +10,7 @@ export interface PosterRenderInput {
   copy: PosterCopy;
   photo?: CanvasImageSource | null;
   /** Boş/undefined ise alt sponsor şeridi çizilmez. */
-  sponsors?: string[];
+  sponsors?: SponsorInput[];
   /** İsteğe bağlı gerçek kulüp arması (public/brand); yoksa çizilen kalkan. */
   crest?: CanvasImageSource | null;
 }

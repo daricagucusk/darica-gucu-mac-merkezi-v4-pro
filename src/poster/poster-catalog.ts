@@ -26,7 +26,7 @@ export interface PosterCatalogEntry {
 
 export const POSTER_CATALOG: readonly PosterCatalogEntry[] = [
   {
-    id: 'shorts-cover', name: 'Shorts / TikTok Kapak', width: 1080, height: 1920, aspect: '9:16',
+    id: 'shorts-cover', name: 'Shorts / Reels Kapak', width: 1080, height: 1920, aspect: '9:16',
     requires: ['theme', 'hook', 'badge', 'home', 'away'],
     optional: ['subtitle', 'cta', 'handle', 'background', 'sponsors'],
     themes: Object.values(SHORTS_THEMES).map((t) => ({ id: t.id, name: t.name, accent: t.accent })),

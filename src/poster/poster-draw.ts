@@ -43,13 +43,17 @@ function drawImageItem(ctx: CanvasRenderingContext2D, item: ImageItem): void {
   const iw = src.naturalWidth ?? src.width ?? item.w;
   const ih = src.naturalHeight ?? src.height ?? item.h;
   if (item.fit === 'contain') {
-    const k = Math.min(item.w / iw, item.h / ih);
+    const pad = Math.min(item.w, item.h) * (item.inset ?? 0);
+    const bw = item.w - pad * 2;
+    const bh = item.h - pad * 2;
+    const k = Math.min(bw / iw, bh / ih);
     const dw = iw * k;
     const dh = ih * k;
     ctx.save();
     if (item.radius) {
       ctx.beginPath();
       ctx.roundRect(item.x, item.y, item.w, item.h, item.radius);
+      if (item.fill) { ctx.fillStyle = item.fill; ctx.fill(); }
       ctx.clip();
     }
     ctx.globalAlpha = item.alpha;

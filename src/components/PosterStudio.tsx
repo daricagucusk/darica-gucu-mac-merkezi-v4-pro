@@ -8,9 +8,9 @@ import {
 } from '../poster/poster-utils';
 import { renderPoster } from '../poster/poster-renderer';
 import { renderPosterTemplate, type PosterTemplateRequest } from '../poster/poster-catalog';
-import { SHORTS_THEMES, type ShortsThemeId, type Weather } from '../poster/poster-layouts';
+import { SHORTS_THEMES, type PosterSponsor, type ShortsThemeId, type Weather } from '../poster/poster-layouts';
 import { countdownTo } from '../media/countdown';
-import { getSponsors } from '../media/sponsors';
+import { getSponsors, sponsorSubline, sponsorThanksLine } from '../media/sponsors';
 import type { PublicPlayer } from '../players/model';
 import PlayerManager from './PlayerManager';
 import './poster-studio.css';
@@ -80,7 +80,8 @@ export default function PosterStudio({ fixtures, verified }: Props) {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   const [crest, setCrest] = useState<HTMLImageElement | null>(null);
-  const [sponsorsOn, setSponsorsOn] = useState(false);
+  const [sponsorsOn, setSponsorsOn] = useState(true);
+  const [sponsorLogos, setSponsorLogos] = useState<Record<string, HTMLImageElement | null>>({});
   const [weather, setWeather] = useState<Weather | null>(null);
   const [minuteTick, setMinuteTick] = useState(0);
   const [mvp, setMvp] = useState<PublicPlayer | null>(null);
@@ -94,7 +95,6 @@ export default function PosterStudio({ fixtures, verified }: Props) {
   const eligibleFixtures = useMemo(() => fixtures.filter((match) => match.status === 'scheduled'), [fixtures]);
   const selectedFixture = useMemo(() => eligibleFixtures.find((match) => match.id === fixtureId) ?? eligibleFixtures[0] ?? null, [eligibleFixtures, fixtureId]);
   const sponsorList = useMemo(() => getSponsors(), []);
-  const sponsorsPending = sponsorList.some((sponsor) => !sponsor.approvedByOwner);
 
   const feedTemplateActive = tab === 'instagram' || (tab === 'story' && storyVariant === 'classic');
   const usesPhoto = feedTemplateActive || (tab === 'story' && storyVariant === 'a') || tab === 'shorts';
@@ -103,9 +103,21 @@ export default function PosterStudio({ fixtures, verified }: Props) {
   // Gerçek kulüp arması (public/brand). Yüklenemezse çizilen kalkan kullanılır.
   useEffect(() => {
     let active = true;
-    loadImage('/brand/darica-gucu-arma.png').then((image) => { if (active) setCrest(image); }).catch(() => { if (active) setCrest(null); });
+    loadImage('/brand/darica-gucu-arma-1024.png').then((image) => { if (active) setCrest(image); }).catch(() => { if (active) setCrest(null); });
     return () => { active = false; };
   }, []);
+
+  // Sponsor logoları: yüklenemeyen logo null kalır; afişte yerine sponsor adı yazı rozeti çizilir.
+  useEffect(() => {
+    let active = true;
+    for (const sponsor of sponsorList) {
+      if (!sponsor.logo) continue;
+      const { id, logo } = sponsor;
+      loadImage(logo).then((image) => { if (active) setSponsorLogos((prev) => ({ ...prev, [id]: image })); })
+        .catch(() => { if (active) setSponsorLogos((prev) => ({ ...prev, [id]: null })); });
+    }
+    return () => { active = false; };
+  }, [sponsorList]);
 
   useEffect(() => {
     if (!photoFile) { setPhoto(null); return; }
@@ -162,7 +174,10 @@ export default function PosterStudio({ fixtures, verified }: Props) {
     return () => window.clearInterval(timer);
   }, [countdownActive]);
 
-  const sponsorNames = useMemo(() => (sponsorsOn ? sponsorList.map((sponsor) => sponsor.name) : []), [sponsorsOn, sponsorList]);
+  const posterSponsors = useMemo<PosterSponsor[]>(() => (sponsorsOn
+    ? sponsorList.map((sponsor) => ({ name: sponsor.shortName, sub: sponsorSubline(sponsor), logo: sponsor.logo ? sponsorLogos[sponsor.id] ?? null : null }))
+    : []), [sponsorsOn, sponsorList, sponsorLogos]);
+  const thanksLine = useMemo(() => sponsorThanksLine(sponsorList), [sponsorList]);
   const numericScore = (value: string): number | undefined => (value.trim() === '' ? undefined : Number(value));
 
   // Aktif şablonun kimliği (indirme adı ve rapor için).
@@ -197,10 +212,12 @@ export default function PosterStudio({ fixtures, verified }: Props) {
         title: captionTemplate === 'announcement' ? (title || 'KULÜP DUYURUSU') : title,
         subtitle: captionTemplate === 'announcement' ? announcementText : subtitle,
       });
-      if (active) setCaption(copy.caption);
+      if (active) setCaption(copy.caption ? `${copy.caption}
+
+${thanksLine}` : '');
 
       const off = document.createElement('canvas');
-      const sponsors = sponsorNames;
+      const sponsors = posterSponsors;
       let result: { width: number; height: number };
       if (tab === 'shorts') {
         if (!fixture) throw new Error('Afiş için karşılaşma seçilmelidir.');
@@ -255,7 +272,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
     return () => { active = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, igFormat, storyVariant, template, shortsTheme, shortsHook, shortsBadge, shortsSubtitle, selectedFixture, eligibleFixtures, verified, title, subtitle,
-    homeScore, awayScore, announcementText, photo, crest, sponsorNames, weather, mvp, mvpImage, minuteTick]);
+    homeScore, awayScore, announcementText, photo, crest, posterSponsors, thanksLine, weather, mvp, mvpImage, minuteTick]);
 
   async function canvasBlob(): Promise<Blob> {
     const canvas = canvasRef.current;
@@ -346,7 +363,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
         <div className="pss-tabs" role="group" aria-label="Çıktı biçimi">
           <button type="button" className={tab === 'instagram' ? 'pss-tab is-active' : 'pss-tab'} aria-pressed={tab === 'instagram'} onClick={() => goTab('instagram')}>Instagram (1080x{igFormat === 'portrait' ? '1350' : '1080'})</button>
           <button type="button" className={tab === 'story' ? 'pss-tab is-active' : 'pss-tab'} aria-pressed={tab === 'story'} onClick={() => goTab('story')}>Hikaye (9:16)</button>
-          <button type="button" className={tab === 'shorts' ? 'pss-tab is-active' : 'pss-tab'} aria-pressed={tab === 'shorts'} onClick={() => goTab('shorts')}>Shorts / TikTok</button>
+          <button type="button" className={tab === 'shorts' ? 'pss-tab is-active' : 'pss-tab'} aria-pressed={tab === 'shorts'} onClick={() => goTab('shorts')}>Shorts / Reels</button>
         </div>
       </div>
 
@@ -490,8 +507,7 @@ export default function PosterStudio({ fixtures, verified }: Props) {
               <span className="pss-icon-box pss-icon-box-neutral"><Icon name="building"/></span>
               <span className="pss-layer-text">
                 <strong>Resmi Sponsor Bandı</strong>
-                <small>Sponsor adları afişin alt şeridine eklenir</small>
-                {sponsorsPending && <small className="pss-pending">Sahibin onayı bekleniyor</small>}
+                <small>Sponsor logoları ve adları afişin alt şeridine eklenir</small>
               </span>
             </span>
             <input type="checkbox" checked={sponsorsOn} onChange={(event) => setSponsorsOn(event.target.checked)} aria-label="Sponsor bandı"/>

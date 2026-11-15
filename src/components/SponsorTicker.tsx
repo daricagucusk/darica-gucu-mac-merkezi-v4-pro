@@ -1,19 +1,35 @@
-import { getSponsors } from '../media/sponsors';
+import { getSponsors, instagramUrl, type Sponsor } from '../media/sponsors';
 
-const TONES = ['gold', 'bright', 'emerald', 'amber', 'cyan', 'gold'];
+/** Logo rozeti: açık zeminli kutu (koyu lacivert/siyah logolar koyu bantta okunsun). Logo yoksa hiçbir şey çizilmez. */
+export function SponsorLogo({ sponsor, className = 'dg-sp-logo' }: { sponsor: Sponsor; className?: string }) {
+  if (!sponsor.logo) return null;
+  return <span className={className}><img src={sponsor.logo} alt="" loading="lazy" decoding="async" /></span>;
+}
 
-/** Kayan sponsor bandı (Stitch sponsor_marquee_hava). Liste src/media/sponsors.ts kaynağından gelir. */
+/** Kayan sponsor bandı (Stitch sponsor_marquee_hava): logo + ad + Instagram hesabı; hesabı olan öğe Instagram'a bağlanır. */
 export default function SponsorTicker() {
   const sponsors = getSponsors();
   if (!sponsors.length) return null;
   const track = (hidden: boolean) => (
     <div className="dg-ticker-track" aria-hidden={hidden || undefined}>
-      {sponsors.map((s, i) => (
-        <span className="dg-ticker-item" key={s.name}>
-          <span className={`dg-ticker-sp tone-${TONES[i % TONES.length]}`}><b>{s.name}</b><small>{s.role}</small></span>
-          <i className="dg-ticker-dot">●</i>
-        </span>
-      ))}
+      {sponsors.map((s) => {
+        const href = instagramUrl(s);
+        const inner = (
+          <>
+            <SponsorLogo sponsor={s} />
+            <b>{s.shortName}</b>
+            {s.instagram ? <small className="handle">{s.instagram}</small> : s.role ? <small className="role">{s.role}</small> : null}
+          </>
+        );
+        return (
+          <span className="dg-ticker-item" key={s.id}>
+            {href
+              ? <a className="dg-ticker-sp" href={href} target="_blank" rel="noopener noreferrer" tabIndex={hidden ? -1 : undefined} aria-label={`${s.name} Instagram hesabı ${s.instagram}`}>{inner}</a>
+              : <span className="dg-ticker-sp">{inner}</span>}
+            <i className="dg-ticker-dot">●</i>
+          </span>
+        );
+      })}
     </div>
   );
   return (

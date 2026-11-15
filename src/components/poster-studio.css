@@ -70,7 +70,6 @@
 .pss-layer-text { min-width: 0; display: grid; }
 .pss-layer-text strong { font: 600 16px/22px var(--pss-body); }
 .pss-layer-text small { color: var(--pss-muted); font-size: 12px; line-height: 16px; }
-.pss .pss-layer-text .pss-pending { color: var(--pss-amber); font-weight: 600; }
 .pss-layer input { width: 22px; height: 22px; flex: none; accent-color: var(--pss-secondary); cursor: pointer; }
 .pss-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .pss .pss-chip { min-height: 44px; padding: 8px 12px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: var(--pss-r-ctl); background: var(--pss-high); color: var(--pss-muted); font: 700 12px/16px var(--pss-display); letter-spacing: .04em; cursor: pointer; }

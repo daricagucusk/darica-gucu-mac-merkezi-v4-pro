@@ -7,6 +7,7 @@ import ClubCrest from './ClubCrest';
 import FixtureCard from './FixtureCard';
 import Icon from './icons';
 import SponsorTicker from './SponsorTicker';
+import SponsorCards from './SponsorCards';
 import { useToast } from './Toast';
 import {
   changeShareText, changeTouchesDarica, filterByTab, groupLabel, isCritical, isDarica, longDate, mapsUrl, matchShareText,
@@ -232,6 +233,8 @@ export default function Dashboard({ metrics, daricaMatches, changes, verified, c
           </>
         ) : <p className="dg-list-empty">{EMPTY[tab]}</p>}
       </section>
+
+      <SponsorCards />
 
       {facilityMatch && (
         <section className="dg-facility" id="dg-facility" aria-label="Tesis ve maç koordinasyonu">

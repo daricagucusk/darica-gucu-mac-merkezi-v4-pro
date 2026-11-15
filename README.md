@@ -66,8 +66,8 @@ Maç kartlarındaki hava bilgisi `api/media.ts` (`?resource=weather`; mantık `a
 ## Oyuncu verisi
 Liste tek JSON olarak **private Blob**'da durur: `players/roster.json`; fotoğraflar `players/photos/<id>-<hash>.<jpg|png|webp>` (uzantı görsel türüne göre). Uçlar `api/media.ts` içinde birleşiktir (`?resource=players|player-photo`, rewrites ile `/api/players` ve `/api/player-photo`); mantık `api/_lib/players-handler.ts` ve `api/_lib/player-photo-handler.ts` dosyalarındadır. İstemciye yalnız `id, number, name, position, team, hasPhoto, updatedAt` gider; Blob yolu/URL'si gitmez, fotoğraf `GET /api/player-photo?id=` ile sunucu üzerinden akıtılır (`private, no-store`). TC, IBAN, telefon alanı yoktur; serbest metinde bu desenler reddedilir. Yazma uçları (POST/DELETE) aynı-kaynak (origin) kontrolünden geçer. **Erişim notu:** uçlar uygulama içi kimlik doğrulama içermez; Vercel Deployment Protection (SSO) arkasındadır. Koruma kapatılırsa oyuncu verisi ve fotoğraflar herkese açık uçlardan okunup yazılabilir; korumayı kapatmadan önce uygulama içi yetkilendirme eklenmelidir. Veri repoya girmez; testlerde yalnız sahte veri kullanılır. Loglara yalnız oyuncu id'si ve sayı yazılır. `/api/players` ve `/api/player-photo` service worker tarafından asla önbelleğe alınmaz.
 
-## Sponsorlar (sahibin onayı gerekli)
-`src/media/sponsors.ts` içindeki liste prototipten alınmış varsayılan adlardır ve hepsi `approvedByOwner: false` işaretlidir. Kulüp sahibi onaylamadan afişe/yayına konmamalıdır.
+## Sponsorlar
+`src/media/sponsors.ts` kulüp yöneticisinin verdiği gerçek sponsor listesidir (`approvedByOwner: true`). Logolar `public/sponsors/`, arma ve PWA ikonları `public/brand` ve `public/` altındadır; `node scripts/brand-assets.mjs` kaynak görselleri (`sponsorlar/`, git dışı) tuvalde şeffaflaştırıp bu dosyaları yeniden üretir. Logosu veya Instagram hesabı olmayan sponsor için yalnız yazı rozeti çizilir; hesap uydurulmaz.
 
 ## Sıfırdan yayına alma
 1. Depoyu Vercel'e bağla (Hobby yeterli).

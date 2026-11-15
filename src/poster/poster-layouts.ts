@@ -3,7 +3,7 @@
 import type { PosterCopy, PosterFormat, PosterTemplate } from './poster-utils';
 import { getPosterDimensions } from './poster-utils';
 import {
-  FONT_BODY, cleanList, fitText, trUpper, wrapText,
+  FONT_BODY, fitText, trUpper, wrapText,
   type Measure, type TextItem,
 } from './poster-text';
 
@@ -25,8 +25,10 @@ export interface ImageItem {
   shape: 'rect' | 'circle'; alpha: number; overlay?: string;
   /** Varsayılan 'cover' (kırpar). 'contain': görseli kırpmadan kutuya sığdırır (arma için). */
   fit?: 'cover' | 'contain';
-  /** Logo karosu: köşe yuvarlama ve ince çerçeve (arma kutusu). */
-  radius?: number; stroke?: string; strokeWidth?: number;
+  /** Logo karosu: köşe yuvarlama, koyu zemin ve ince çerçeve (Stitch arma karosu; arma şeffaf PNG'dir). */
+  radius?: number; fill?: string; stroke?: string; strokeWidth?: number;
+  /** Karo içinde görsel kenar payı (kutu oranı, 0..0.3). */
+  inset?: number;
 }
 export type PosterItem = TextItem | RectItem | CircleItem | ShieldItem | BgItem | ImageItem;
 
@@ -34,7 +36,7 @@ export interface SafeZone { top: number; bottom: number }
 export interface PosterLayout { width: number; height: number; safe: SafeZone; items: PosterItem[] }
 
 export const SAFE_STORY: SafeZone = { top: 250, bottom: 250 };
-/** Referans (shorts_tiktok_kapak box-shorts): üst %15, alt %20 güvenli alan kılavuzu; 250 px şartından katı. */
+/** Referans (shorts kapak box-shorts): üst %15, alt %20 güvenli alan kılavuzu; 250 px şartından katı. */
 export const SAFE_SHORTS: SafeZone = { top: 288, bottom: 384 };
 export const SAFE_FEED: SafeZone = { top: 0, bottom: 0 };
 
@@ -66,36 +68,74 @@ function framed(height: number): RectItem[] {
   return [{ ...a, h: height - 56 }, { ...b, h: height - 76 }];
 }
 
-/** Kulüp arması: crest verilmişse kırpmadan sığdırılan görsel, yoksa çizilen kalkan. */
+/** Kulüp arması: crest verilmişse (şeffaf PNG) Stitch karosunda kırpmadan sığdırılan görsel, yoksa çizilen kalkan. */
 function clubCrest(role: string, cx: number, cy: number, r: number, color: string, crest: CanvasImageSource | null | undefined): PosterItem {
   if (!crest) return { kind: 'shield', role, cx, cy, r, color, monogram: 'DG' };
   return {
     kind: 'image', role, image: crest, x: cx - r * 1.2, y: cy - r * 1.15, w: r * 2.4, h: r * 2.4, shape: 'rect', alpha: 1, fit: 'contain',
-    radius: r * 0.38, stroke: 'rgba(74, 225, 118, 0.75)', strokeWidth: 4,
+    radius: r * 0.38, fill: 'rgba(6, 16, 12, 0.92)', inset: 0.07, stroke: 'rgba(74, 225, 118, 0.75)', strokeWidth: 4,
   };
 }
 
-export function sponsorLabel(sponsors: readonly string[]): string {
-  return `★ ${sponsors.map(trUpper).join('  •  ')} ★`;
+/** Afiş sponsoru: ad + isteğe bağlı alt satır + logo (null/yüklenemedi ise yazı rozeti çizilir). */
+export interface PosterSponsor { name: string; sub?: string; logo?: CanvasImageSource | null }
+export type SponsorInput = string | PosterSponsor;
+
+export function normalizeSponsors(list: ReadonlyArray<SponsorInput> | null | undefined): PosterSponsor[] {
+  const out: PosterSponsor[] = [];
+  for (const entry of list ?? []) {
+    const raw: PosterSponsor = typeof entry === 'string' ? { name: entry } : entry;
+    const name = raw.name.trim();
+    if (!name) continue;
+    out.push({ name, sub: raw.sub?.trim() || undefined, logo: raw.logo ?? null });
+  }
+  return out;
 }
 
-/** Stitch alt sponsor şeridi (sponsor_marquee_hava canvas JS). Boş/undefined: hiçbir öğe üretmez. */
-function sponsorStrip(sponsors: readonly string[] | undefined, y: number, critical: boolean, measure: Measure): PosterItem[] {
-  const list = cleanList(sponsors);
+export const SPONSOR_STRIP_H = 84;
+
+function imageAspect(image: CanvasImageSource): number {
+  const src = image as { naturalWidth?: number; naturalHeight?: number; width?: number; height?: number };
+  const w = src.naturalWidth ?? src.width ?? 1;
+  const h = src.naturalHeight ?? src.height ?? 1;
+  return h > 0 && w > 0 ? w / h : 1;
+}
+
+/** Stitch alt sponsor şeridi: logo rozeti (açık zemin, koyu logolar okunur) + ad + alt satır. Boş liste: öğe yok. */
+function sponsorStrip(sponsors: ReadonlyArray<SponsorInput> | undefined, y: number, critical: boolean, measure: Measure): PosterItem[] {
+  const list = normalizeSponsors(sponsors);
   if (list.length === 0) return [];
-  return [
-    { kind: 'rect', role: 'sponsor-strip', x: 36, y, w: W - 72, h: 60, radius: 0, fill: 'rgba(6, 16, 12, 0.96)', stroke: 'rgba(234, 179, 8, 0.6)', strokeWidth: 2 },
-    fitText({
-      role: 'sponsor-text', text: sponsorLabel(list), x: W / 2, y: y + 37, maxWidth: W - 72 - 40,
-      size: 18, minSize: 11, weight: 900, color: C.goldLight, critical,
-    }, measure),
+  const items: PosterItem[] = [
+    { kind: 'rect', role: 'sponsor-strip', x: 36, y, w: W - 72, h: SPONSOR_STRIP_H, radius: 0, fill: 'rgba(6, 16, 12, 0.96)', stroke: 'rgba(234, 179, 8, 0.6)', strokeWidth: 2 },
   ];
+  const x0 = 36 + 12;
+  const cellW = (W - 72 - 24) / list.length;
+  const cy = y + SPONSOR_STRIP_H / 2;
+  list.forEach((sp, index) => {
+    const cx0 = x0 + index * cellW;
+    if (sp.logo) {
+      const chipH = 62;
+      const chipW = Math.max(66, Math.min(150, cellW * 0.46, imageAspect(sp.logo) * 46 + 20));
+      items.push({ kind: 'rect', role: 'sponsor-chip', x: cx0 + 6, y: cy - chipH / 2, w: chipW, h: chipH, radius: 14, fill: '#eef3ef', stroke: 'rgba(234, 179, 8, 0.55)', strokeWidth: 2 });
+      items.push({ kind: 'image', role: 'sponsor-logo', image: sp.logo, x: cx0 + 6 + 10, y: cy - chipH / 2 + 8, w: chipW - 20, h: chipH - 16, shape: 'rect', alpha: 1, fit: 'contain' });
+      const tx = cx0 + 6 + chipW + 12;
+      const tw = cellW - chipW - 24;
+      items.push(fitText({ role: 'sponsor-name', text: sp.name, x: tx, y: sp.sub ? cy - 3 : cy + 7, maxWidth: tw, size: 21, minSize: 11, weight: 900, color: '#ffffff', upper: true, align: 'left', critical }, measure));
+      if (sp.sub) items.push(fitText({ role: 'sponsor-sub', text: sp.sub, x: tx, y: cy + 22, maxWidth: tw, size: 15, minSize: 10, weight: 600, family: FONT_BODY, color: C.goldLight, align: 'left', critical }, measure));
+    } else {
+      const bw = cellW - 12;
+      items.push({ kind: 'rect', role: 'sponsor-chip', x: cx0 + 6, y: cy - 31, w: bw, h: 62, radius: 14, fill: 'rgba(234, 179, 8, 0.12)', stroke: 'rgba(234, 179, 8, 0.65)', strokeWidth: 2 });
+      items.push(fitText({ role: 'sponsor-name', text: sp.name, x: cx0 + 6 + bw / 2, y: sp.sub ? cy - 1 : cy + 9, maxWidth: bw - 28, size: 26, minSize: 12, weight: 900, color: C.goldLight, upper: true, critical }, measure));
+      if (sp.sub) items.push(fitText({ role: 'sponsor-sub', text: sp.sub, x: cx0 + 6 + bw / 2, y: cy + 20, maxWidth: bw - 28, size: 14, minSize: 10, weight: 700, family: FONT_BODY, color: C.slateLight, upper: true, critical }, measure));
+    }
+  });
+  return items;
 }
 
 // =====================================================================
-// 1) Shorts / TikTok kapak (1080x1920)
+// 1) Shorts / Reels kapak (1080x1920)
 // =====================================================================
-export type ShortsThemeId = 'youtube-red' | 'tiktok-purple' | 'club-emerald';
+export type ShortsThemeId = 'youtube-red' | 'club-emerald';
 
 export interface ShortsTheme {
   id: ShortsThemeId;
@@ -112,10 +152,6 @@ export const SHORTS_THEMES: Record<ShortsThemeId, ShortsTheme> = {
     id: 'youtube-red', name: 'YouTube Kırmızı', accent: '#ef4444', shield: '#850d0d', frame: 'rgba(239, 68, 68, 0.4)',
     stops: [[0, '#5a0606'], [0.35, '#850d0d'], [0.7, '#240404'], [1, '#0c0202']],
   },
-  'tiktok-purple': {
-    id: 'tiktok-purple', name: 'TikTok Mor', accent: '#d946ef', shield: '#58117d', frame: 'rgba(217, 70, 239, 0.4)',
-    stops: [[0, '#2e0854'], [0.4, '#58117d'], [0.75, '#120422'], [1, '#050a14']],
-  },
   'club-emerald': {
     id: 'club-emerald', name: 'Darıca Zümrüt', accent: '#10b981', shield: '#0a5c3d', frame: 'rgba(16, 185, 129, 0.4)',
     stops: [[0, '#06291a'], [0.4, '#0a422b'], [0.8, '#04150d'], [1, '#020905']],
@@ -131,7 +167,7 @@ export interface ShortsInput {
   away: string;
   cta?: string;
   handle?: string;
-  sponsors?: string[];
+  sponsors?: SponsorInput[];
   background?: CanvasImageSource | null;
   /** İsteğe bağlı gerçek kulüp arması; yoksa çizilen kalkan. */
   crest?: CanvasImageSource | null;
@@ -197,7 +233,7 @@ export interface StoryAInput {
   venue: string;
   countdown?: Countdown | null;
   weather?: Weather | null;
-  sponsors?: string[];
+  sponsors?: SponsorInput[];
   photo?: CanvasImageSource | null;
   crest?: CanvasImageSource | null;
 }
@@ -264,7 +300,7 @@ export interface StoryCInput {
   group?: string;
   score?: { home: number; away: number } | null;
   mvp?: MvpInput | null;
-  sponsors?: string[];
+  sponsors?: SponsorInput[];
   crest?: CanvasImageSource | null;
 }
 
@@ -315,7 +351,7 @@ export interface FeedInput {
   format: PosterFormat;
   template: PosterTemplate;
   copy: PosterCopy;
-  sponsors?: string[];
+  sponsors?: SponsorInput[];
   photo?: CanvasImageSource | null;
   crest?: CanvasImageSource | null;
 }
@@ -336,9 +372,9 @@ export function layoutFeedPoster(input: FeedInput, measure: Measure): PosterLayo
   const safe = story ? SAFE_STORY : SAFE_FEED;
   const top = story ? 290 : square ? 60 : 110;
   const crestY = story ? 740 : square ? 440 : 560;
-  const stripY = story ? height - 250 : height - 170;
+  const stripY = story ? height - 250 : height - 200;
   const d = input.copy.details;
-  const sponsors = cleanList(input.sponsors);
+  const sponsors = normalizeSponsors(input.sponsors);
 
   const items: PosterItem[] = [background(width, height)];
   if (input.photo) {
