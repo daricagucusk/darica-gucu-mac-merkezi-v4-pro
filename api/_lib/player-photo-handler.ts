@@ -89,7 +89,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       return;
     }
     const hash = createHash('sha256').update(bytes).digest('hex');
-    const key = photoKeyFor(id, hash);
+    const key = photoKeyFor(id, hash, checked.value.contentType);
     await writeBytes(key, bytes, checked.value.contentType);
     const old = player.photoKey;
     await writeRoster(roster.map((p) => (p.id === id ? { ...p, photoKey: key, updatedAt: new Date().toISOString() } : p)));

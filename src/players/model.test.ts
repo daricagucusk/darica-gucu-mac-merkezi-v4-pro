@@ -75,6 +75,8 @@ describe('fotoğraf doğrulama', () => {
     expect(isSafePlayerId('../etc')).toBe(false);
     expect(isSafePlayerId('id-test-1')).toBe(true);
     expect(photoKeyFor('id-test-1', 'abcdef0123456789ffff')).toBe('players/photos/id-test-1-abcdef0123456789.jpg');
+    expect(photoKeyFor('id-test-1', 'abcdef0123456789ffff', 'image/png')).toBe('players/photos/id-test-1-abcdef0123456789.png');
+    expect(photoKeyFor('id-test-1', 'abcdef0123456789ffff', 'image/webp')).toBe('players/photos/id-test-1-abcdef0123456789.webp');
     expect(normalizeTeam('U 19')).toBe('U-19');
   });
 });

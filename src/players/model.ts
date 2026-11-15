@@ -143,6 +143,8 @@ export function isSafePlayerId(id: unknown): id is string {
   return typeof id === 'string' && /^[a-z0-9-]{6,40}$/.test(id);
 }
 
-export function photoKeyFor(id: string, hashHex: string): string {
-  return `players/photos/${id}-${hashHex.slice(0, 16)}.jpg`;
+const PHOTO_EXT: Record<PhotoType, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+
+export function photoKeyFor(id: string, hashHex: string, contentType: PhotoType = 'image/jpeg'): string {
+  return `players/photos/${id}-${hashHex.slice(0, 16)}.${PHOTO_EXT[contentType]}`;
 }
