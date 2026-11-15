@@ -1,9 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AskfReviewPanel from './components/AskfReviewPanel';
 import PwaStatus from './components/PwaStatus';
 import Dashboard from './components/Dashboard';
 import PosterStudio from './components/PosterStudio';
 import NotificationCenter from './components/NotificationCenter';
+import ChangeBand from './components/ChangeBand';
+import ClubCrest from './components/ClubCrest';
+import FixtureCard from './components/FixtureCard';
+import Icon, { type IconName } from './components/icons';
+import { useToast } from './components/Toast';
+import {
+  changeShareText, changeTouchesDarica, diffRows, groupLabel, isVerificationOnly, shareText, titleTr,
+  type FxChange, type FxMatch,
+} from './components/fixture-utils';
 import { buildDashboardMetrics } from './dashboard/metrics';
 import type { PosterFixture } from './poster/poster-utils';
 import {
@@ -73,6 +82,18 @@ const navigation = [
   { id: 'source', label: 'ASKF Yönetimi', short: 'ASKF' },
 ] as const;
 type Screen = typeof navigation[number]['id'];
+const navGroups: Array<{ id: string; label: string; short: string; icon: IconName; target: Screen; screens: Screen[] }> = [
+  { id: 'agenda', label: 'Haftalık Maç Ajandası', short: 'Takvim & Bülten', icon: 'calendar', target: 'dashboard', screens: ['dashboard', 'matches', 'clubs', 'venues', 'changes'] },
+  { id: 'studio', label: 'Paylaşım Stüdyosu', short: 'Paylaşım', icon: 'share', target: 'posters', screens: ['posters'] },
+  { id: 'sync', label: 'ASKF Otomasyon', short: 'ASKF Senkron', icon: 'file', target: 'source', screens: ['source'] },
+];
+const subNav: Array<{ id: Screen; label: string }> = [
+  { id: 'dashboard', label: 'Ajanda' },
+  { id: 'matches', label: 'Maçlar' },
+  { id: 'clubs', label: 'Kulüplerim' },
+  { id: 'venues', label: 'Sahalar' },
+  { id: 'changes', label: 'Değişiklikler' },
+];
 
 const initialStatus: SourceStatus = {
   state: 'awaiting_first_run',
@@ -99,13 +120,6 @@ function formatDate(value: string): string {
     weekday: 'short', day: '2-digit', month: 'short',
     timeZone: 'Europe/Istanbul',
   }).format(new Date(`${value}T12:00:00+03:00`));
-}
-function formatTimestamp(value: string | null | undefined): string {
-  if (!value) return 'Henüz yok';
-  return new Intl.DateTimeFormat('tr-TR', {
-    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-    timeZone: 'Europe/Istanbul',
-  }).format(new Date(value));
 }
 function stateLabel(state: string, stale: boolean): string {
   if (stale) return 'ESKİ VERİ · SON DOĞRULANMIŞ PROGRAM';
@@ -152,46 +166,54 @@ function App() {
     } catch { /* Private browsing can disable local persistence. */ }
   }, [trackedClubs, trackedVenues]);
 
+  const [refreshing, setRefreshing] = useState(false);
+  const loadData = useCallback(async (isActive: () => boolean = () => true) => {
+    try {
+      const [statusResponse, liveResponse] = await Promise.all([
+        fetch('/api/source-status', { cache: 'no-store' }),
+        fetch('/api/live', { cache: 'no-store' }),
+      ]);
+      if (!statusResponse.ok || !liveResponse.ok) throw new Error('Maç merkezi verisi alınamadı.');
+      const [statusData, liveData] = await Promise.all([
+        statusResponse.json() as Promise<SourceStatus>,
+        liveResponse.json() as Promise<LiveData>,
+      ]);
+      if (!isActive()) return;
+      setSourceStatus(statusData);
+      setLive(liveData);
+      setLoadError(false);
+      if (liveData.status === 'verified' && liveData.matches.length > 0) {
+        try { localStorage.setItem('dg-v4-last-verified', JSON.stringify(liveData)); } catch { /* Cache is optional. */ }
+      }
+    } catch {
+      if (!isActive()) return;
+      setLoadError(true);
+      try {
+        const cached = localStorage.getItem('dg-v4-last-verified');
+        if (cached) {
+          const parsed = JSON.parse(cached) as LiveData;
+          if (parsed.status === 'verified' && Array.isArray(parsed.matches)) {
+            setLive({ ...parsed, freshness: 'stale' });
+            setSourceStatus((current) => ({ ...current, state: 'refresh_failed' }));
+          }
+        }
+      } catch { /* Ignore invalid local cache; never invent fallback fixtures. */ }
+    } finally {
+      if (isActive()) setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     let active = true;
-    async function loadData() {
-      try {
-        const [statusResponse, liveResponse] = await Promise.all([
-          fetch('/api/source-status', { cache: 'no-store' }),
-          fetch('/api/live', { cache: 'no-store' }),
-        ]);
-        if (!statusResponse.ok || !liveResponse.ok) throw new Error('Maç merkezi verisi alınamadı.');
-        const [statusData, liveData] = await Promise.all([
-          statusResponse.json() as Promise<SourceStatus>,
-          liveResponse.json() as Promise<LiveData>,
-        ]);
-        if (!active) return;
-        setSourceStatus(statusData);
-        setLive(liveData);
-        setLoadError(false);
-        if (liveData.status === 'verified' && liveData.matches.length > 0) {
-          try { localStorage.setItem('dg-v4-last-verified', JSON.stringify(liveData)); } catch { /* Cache is optional. */ }
-        }
-      } catch {
-        if (!active) return;
-        setLoadError(true);
-        try {
-          const cached = localStorage.getItem('dg-v4-last-verified');
-          if (cached) {
-            const parsed = JSON.parse(cached) as LiveData;
-            if (parsed.status === 'verified' && Array.isArray(parsed.matches)) {
-              setLive({ ...parsed, freshness: 'stale' });
-              setSourceStatus((current) => ({ ...current, state: 'refresh_failed' }));
-            }
-          }
-        } catch { /* Ignore invalid local cache; never invent fallback fixtures. */ }
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    void loadData();
+    void loadData(() => active);
     return () => { active = false; };
-  }, []);
+  }, [loadData]);
+
+  async function refreshData() {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  }
 
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
   const allMatches = live.matches ?? [];
@@ -246,54 +268,86 @@ function App() {
   function addVenue(venue: string) {
     setTrackedVenues((current) => current.includes(venue) ? current : [...current, venue]);
   }
+  const { toast, show } = useToast();
+  const group = navGroups.find((item) => item.screens.includes(screen)) ?? navGroups[0];
+  const healthy = verified && !stale;
+  const daricaChanges = useMemo(() => (live.changes ?? []).filter(changeTouchesDarica) as FxChange[], [live.changes]);
+  const critical = useMemo(() => {
+    const map = new Map<string, FxChange>();
+    for (const change of daricaChanges) if (!isVerificationOnly(change) && change.type !== 'added') map.set(change.current?.id ?? change.fixtureId, change);
+    return map;
+  }, [daricaChanges]);
+  const share = async (text: string, title: string) => show(await shareText(text, title));
+  const goStudio = () => setScreen('posters');
+  const unavailableText = loading ? 'Doğrulanmış maç programı yükleniyor…' : verified ? 'Bu program aralığında yaklaşan Darıca Gücü maçı listelenmiyor.' : 'Sıradaki maç, ASKF kaynağı doğrulandıktan sonra gösterilecek.';
+
   return (
-    <div className="app-shell">
+    <div className="dg-shell app-shell">
       <a className="skip-link" href="#main-content">Ana içeriğe geç</a>
-      <aside className="sidebar" aria-label="Ana gezinme">
-        <div className="brand">
-          <div className="brand-mark" aria-hidden="true">DG</div>
-          <div><strong>Darıca Gücü</strong><span>MAÇ MERKEZİ <b>V4 PRO</b></span></div>
-        </div>
-        <div className="nav-label">OPERASYON</div>
-        <nav>
-          {navigation.map((item, index) => (
-            <button className={screen === item.id ? 'nav-item active' : 'nav-item'} key={item.id} type="button" onClick={() => setScreen(item.id)} aria-current={screen === item.id ? 'page' : undefined}>
-              <span className="nav-index">{String(index + 1).padStart(2, '0')}</span>{item.label}
+      <header className="dg-header">
+        <div className="dg-header-in">
+          <button type="button" className="dg-brand" onClick={() => setScreen('dashboard')} aria-label="Darıca Gücü, ana sayfa">
+            <span className="dg-brand-logo"><ClubCrest /></span>
+            <span className="dg-brand-txt">
+              <span className="dg-brand-line"><strong>DARICA GÜCÜ</strong><em className="dg-sk">SK 2024</em><em className="dg-sk-m">SK</em></span>
+              <small className="dg-sub-d">Otomatik ASKF Fikstür &amp; Paylaşım Stüdyosu</small>
+              <small className="dg-sub-m">ASKF Fikstür &amp; Maç Bülteni</small>
+            </span>
+          </button>
+          <nav className="dg-tabs-nav" aria-label="Ana gezinme">
+            {navGroups.map((item) => (
+              <button key={item.id} type="button" className={group.id === item.id ? 'on' : ''} aria-current={group.id === item.id ? 'page' : undefined} onClick={() => setScreen(item.target)}>
+                <Icon name={item.icon} size={16} /><span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+          <div className="dg-header-right">
+            {healthy && <span className="dg-live"><i />ASKF Canlı</span>}
+            <button type="button" className="dg-refresh" onClick={() => void refreshData()} disabled={refreshing} aria-label="ASKF verisini yenile">
+              <Icon name="refresh" size={14} className={refreshing ? 'spin' : ''} /><span>{refreshing ? 'Yenileniyor' : 'ASKF Yenile'}</span>
             </button>
-          ))}
-        </nav>
-        <div className="sidebar-footer"><span className={verified && !stale ? 'status-dot healthy' : 'status-dot'} /><span>KULÜP KOMUTA MERKEZİ</span></div>
-      </aside>
+            <NotificationCenter onNavigate={setScreen}/>
+          </div>
+        </div>
+        {group.id === 'agenda' && (
+          <nav className="dg-subnav" aria-label="Ajanda bölümleri">
+            <div className="dg-subnav-in">
+              {subNav.map((item) => (
+                <button key={item.id} type="button" className={screen === item.id ? 'on' : ''} aria-current={screen === item.id ? 'page' : undefined} onClick={() => setScreen(item.id)}>
+                  {item.label}{item.id === 'changes' && daricaChanges.length > 0 && <b>{daricaChanges.length}</b>}
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
+      </header>
 
-      <main className="main-content" id="main-content" tabIndex={-1}>
+      <main className="dg-main main-content" id="main-content" tabIndex={-1}>
+        <h1 className="sr-only">{navigation.find((item) => item.id === screen)?.label}</h1>
         <PwaStatus />
-        <header className="topbar">
-          <div><span className="eyebrow">DARICA GÜCÜ SPOR KULÜBÜ</span><h1>{navigation.find((item) => item.id === screen)?.label}</h1></div>
-          <div className="topbar-meta"><span className="environment">V4 PRO</span><span className="date-label">{new Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' }).format(new Date()).toLocaleUpperCase('tr-TR')}</span><NotificationCenter onNavigate={setScreen}/></div>
-        </header>
 
-        {screen !== 'dashboard' && <section className={verified && !stale ? 'source-banner healthy' : 'source-banner'} aria-labelledby="source-heading">
-          <div className="source-icon" aria-hidden="true">{verified && !stale ? '✓' : '!'}</div>
+        {screen !== 'dashboard' && screen !== 'changes' && <section className={healthy ? 'source-banner healthy' : 'source-banner'} aria-labelledby="source-heading">
+          <div className="source-icon" aria-hidden="true">{healthy ? '✓' : '!'}</div>
           <div className="source-copy"><span className="eyebrow">VERİ KAYNAĞI DURUMU</span><h2 id="source-heading">{stale ? 'Yenileme başarısız — son doğrulanmış program korunuyor' : verified ? 'ASKF programı doğrulandı' : sourceStatus.state === 'running' ? 'ASKF programı kontrol ediliyor' : 'İlk resmî ASKF doğrulaması bekleniyor'}</h2><p>{verified ? `${live.sourceFile ?? sourceStatus.sourceFile ?? 'ASKF Excel'} · ${live.season ?? sourceStatus.sourceSeason ?? ''} · ${allMatches.length} karşılaşma` : 'Doğrulanmış program oluşana kadar örnek maçlar canlı fikstür gibi gösterilmez.'}</p></div>
-          <span className={verified && !stale ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span>
+          <span className={healthy ? 'state-pill healthy' : 'state-pill'}>{stateLabel(sourceStatus.state, stale)}</span>
         </section>}
 
-        {screen === 'dashboard' && <Dashboard metrics={dashboardMetrics} changes={live.changes ?? []} verified={verified && !stale} lastUpdated={formatTimestamp(live.checkedAt ?? sourceStatus.lastSuccess)} onNavigate={setScreen}/>}
+        {screen === 'dashboard' && <Dashboard metrics={dashboardMetrics} daricaMatches={daricaMatches as FxMatch[]} changes={(live.changes ?? []) as FxChange[]} verified={healthy} checkedAt={live.checkedAt ?? sourceStatus.lastSuccess} sourceWeek={live.sourceWeek ?? sourceStatus.sourceWeek} onNavigate={setScreen}/>}
 
         {screen === 'matches' && <>
           <section className="next-match-panel">
             <div className="next-match-heading"><span className="eyebrow">DARICA GÜCÜ · SIRADAKİ MAÇ</span><span className="muted-label">Resmî programdan</span></div>
-            {nextMatch ? <div className="next-match-content"><div className="next-match-date"><strong>{formatDate(nextMatch.date)}</strong><span>{nextMatch.time}</span></div><div className="next-match-teams"><strong>{nextMatch.home}</strong><span>VS</span><strong>{nextMatch.away}</strong></div><div className="next-match-meta"><span className="category-pill">{nextMatch.group}</span><span>{nextMatch.venue}</span></div></div> : <div className="next-match-empty">{loading ? 'Doğrulanmış maç programı yükleniyor…' : verified ? 'Bu program aralığında yaklaşan Darıca Gücü maçı listelenmiyor.' : 'Sıradaki maç, ASKF kaynağı doğrulandıktan sonra gösterilecek.'}</div>}
+            {nextMatch ? <div className="next-match-content"><div className="next-match-date"><strong>{formatDate(nextMatch.date)}</strong><span>{nextMatch.time}</span></div><div className="next-match-teams"><strong>{nextMatch.home}</strong><span>VS</span><strong>{nextMatch.away}</strong></div><div className="next-match-meta"><span className="category-pill">{groupLabel(nextMatch.group)}</span><span>{titleTr(nextMatch.venue)}</span></div></div> : <div className="next-match-empty">{unavailableText}</div>}
           </section>
           <section className="schedule-panel module-panel">
             <div className="section-heading"><div><span className="eyebrow">KOCAELİ · U11–U19</span><h2>Haftalık maç programı</h2></div><span className="muted-label">{verified ? `${filteredMatches.length} / ${allMatches.length} maç` : 'Kaynak doğrulaması gerekli'}</span></div>
             <div className="filter-toolbar">
               <label>Kulüp<select value={selectedClub} onChange={(event) => setSelectedClub(event.target.value)}><option value="ALL">Tüm kulüpler</option>{trackedClubs.map((club) => <option key={normalizeClubKey(club)} value={club}>{club}</option>)}</select></label>
-              <label>Kategori<select value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value)}><option value="ALL">Tüm kategoriler</option>{groups.map((group) => <option key={group}>{group}</option>)}</select></label>
+              <label>Kategori<select value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value)}><option value="ALL">Tüm kategoriler</option>{groups.map((item) => <option key={item}>{item}</option>)}</select></label>
               <label>Saha<select value={selectedVenue} onChange={(event) => setSelectedVenue(event.target.value)}><option value="ALL">Tüm sahalar</option>{venues.map((venue) => <option key={venue}>{venue}</option>)}</select></label>
               <label className="search-filter">Ara<input value={matchSearch} onChange={(event) => setMatchSearch(event.target.value)} placeholder="Kulüp, saha, kategori" /></label>
             </div>
-            {filteredMatches.length > 0 ? <div className="match-list">{filteredMatches.map((match) => <article className="match-row" key={match.id}><div className="match-time"><strong>{match.time}</strong><span>{formatDate(match.date)}</span></div><div className="match-teams"><strong>{match.home}</strong><span>—</span><strong>{match.away}</strong></div><div className="match-meta"><span className="category-pill">{match.group}</span><span className="venue-name">{match.venue}</span></div><span className={match.status === 'scheduled' ? 'match-status' : 'match-status attention'}>{match.status === 'scheduled' ? 'Programda' : match.status === 'postponed' ? 'Ertelendi' : 'İptal'}</span></article>)}</div> : <div className="empty-state"><div className="empty-symbol">—</div><h3>{verified ? 'Bu filtrelerde maç bulunamadı' : loadError ? 'Maç verisi şu anda alınamıyor' : 'Doğrulanmış maç verisi henüz yok'}</h3><p>{verified ? 'Filtreleri genişlet veya farklı bir kulüp, kategori ya da saha seç.' : 'ASKF kaynağı başarıyla taranıp Excel dosyası doğrulandığında karşılaşmalar burada listelenecek.'}</p><span className="empty-note">Programda maç görünmemesi, sahanın kesin olarak boş olduğu anlamına gelmez.</span></div>}
+            {filteredMatches.length > 0 ? <div className="dg-fxm-list dg-fxm-grid">{filteredMatches.map((match) => <FixtureCard key={match.id} match={match as FxMatch} change={critical.get(match.id)} highlight={match.id === nextMatch?.id} approved={healthy} variant="m" onStudio={goStudio} onShare={share} />)}</div> : <div className="empty-state"><div className="empty-symbol">—</div><h3>{verified ? 'Bu filtrelerde maç bulunamadı' : loadError ? 'Maç verisi şu anda alınamıyor' : 'Doğrulanmış maç verisi henüz yok'}</h3><p>{verified ? 'Filtreleri genişlet veya farklı bir kulüp, kategori ya da saha seç.' : 'ASKF kaynağı başarıyla taranıp Excel dosyası doğrulandığında karşılaşmalar burada listelenecek.'}</p><span className="empty-note">Programda maç görünmemesi, sahanın kesin olarak boş olduğu anlamına gelmez.</span></div>}
           </section>
         </>}
 
@@ -311,27 +365,45 @@ function App() {
           <div className="section-heading"><div><span className="eyebrow">SAHA VE TESİS KATALOĞU</span><h2>Saha Merkezi</h2></div><span className="muted-label">{venues.length} kaynak sahası</span></div>
           <div className="module-content"><p className="module-intro">ASKF programında geçen sahalar listelenir. Takip ettiğin sahaların programını buradan filtreleyebilirsin.</p>
             <input className="module-search" value={venueSearch} onChange={(event) => setVenueSearch(event.target.value)} placeholder="Saha veya tesis ara"/>
-            <div className="management-list">{filteredVenues.map((venue) => <div className="management-row" key={venue}><div><strong>{venue}</strong><span>{matchesForVenue(allMatches, venue).length} listelenen karşılaşma · Boş olduğu anlamına gelmez</span></div><button className={trackedVenues.includes(venue) ? 'quiet-button selected' : 'quiet-button'} type="button" onClick={() => trackedVenues.includes(venue) ? setTrackedVenues((current) => current.filter((item) => item !== venue)) : addVenue(venue)}>{trackedVenues.includes(venue) ? 'Takipte' : 'Sahayı takip et'}</button></div>)}</div>
+            <div className="management-list">{filteredVenues.map((venue) => <div className="management-row" key={venue}><div><strong>{venue}</strong><span>{matchesForVenue(allMatches, venue).length} listelenen karşılaşma · Boş olduğu anlamına gelmez</span></div><div className="dg-row-actions"><a className="quiet-button dg-link-btn" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${titleTr(venue)}, Kocaeli`)}`} target="_blank" rel="noopener noreferrer">Harita</a><button className={trackedVenues.includes(venue) ? 'quiet-button selected' : 'quiet-button'} type="button" onClick={() => trackedVenues.includes(venue) ? setTrackedVenues((current) => current.filter((item) => item !== venue)) : addVenue(venue)}>{trackedVenues.includes(venue) ? 'Takipte' : 'Sahayı takip et'}</button></div></div>)}</div>
             {trackedVenues.length > 0 && <p className="quiet-note">Takip edilen sahalar: {trackedVenues.join(' · ')}</p>}
             {venues.length === 0 && <div className="empty-state"><h3>Henüz doğrulanmış saha kataloğu yok</h3><p>ASKF programı doğrulandığında sahalar otomatik listelenecek.</p></div>}
           </div>
         </section>}
 
-        {screen === 'changes' && <section className="module-panel">
-          <div className="section-heading"><div><span className="eyebrow">PROGRAM KARŞILAŞTIRMASI</span><h2>Değişiklik merkezi</h2></div><span className="muted-label">{live.changes?.length ?? 0} olay</span></div>
-          <div className="module-content">{!verified ? <div className="empty-state"><h3>Değişiklik geçmişi bekleniyor</h3><p>İki doğrulanmış ASKF programı karşılaştırılmadan değişiklik ilan edilmez.</p></div> : live.changes?.length ? <div className="management-list">{live.changes.map((change, index) => <div className="management-row change-row" key={`${change.fixtureId}-${change.type}-${index}`}><div><strong>{changeLabel(change.type)}</strong><span>{change.current?.home ?? change.previous?.home ?? 'Takım'} – {change.current?.away ?? change.previous?.away ?? 'Takım'} · {change.current?.group ?? change.previous?.group ?? ''}</span><small>{change.status === 'verification_required' || change.type === 'missing' ? 'İPTAL DEĞİL · DOĞRULAMA GEREKLİ' : change.current?.date ? `${formatDate(change.current.date)} · ${change.current.time ?? ''}` : 'Kaynak değişikliği'}</small></div></div>)}</div> : <div className="empty-state"><h3>Yeni değişiklik yok</h3><p>Son doğrulanmış program ile önceki program arasında kayıtlı değişiklik bulunmuyor.</p></div>}</div>
-        </section>}
+        {screen === 'changes' && <div className="dg-changes">
+          {verified && <ChangeBand changes={daricaChanges} daricaMatches={daricaMatches as FxMatch[]} checkedAt={live.checkedAt ?? sourceStatus.lastSuccess} sourceWeek={live.sourceWeek ?? sourceStatus.sourceWeek} now={new Date()} onShare={share} onToast={show} />}
+          <section className="module-panel">
+            <div className="section-heading"><div><span className="eyebrow">PROGRAM KARŞILAŞTIRMASI</span><h2>Değişiklik merkezi</h2></div><span className="muted-label">{live.changes?.length ?? 0} olay</span></div>
+            <div className="module-content">{!verified ? <div className="empty-state"><h3>Değişiklik geçmişi bekleniyor</h3><p>İki doğrulanmış ASKF programı karşılaştırılmadan değişiklik ilan edilmez.</p></div> : live.changes?.length ? <div className="dg-change-list">{(live.changes as FxChange[]).map((change, index) => {
+              const m = change.current ?? change.previous ?? {};
+              const rows = diffRows(change);
+              const verifyOnly = isVerificationOnly(change);
+              return <article className={verifyOnly ? 'dg-change-card verify' : 'dg-change-card'} key={`${change.fixtureId}-${change.type}-${index}`}>
+                <div className="dg-change-top"><span className="dg-pill gold">{groupLabel(m.group)}</span><strong>{changeLabel(change.type)}</strong></div>
+                <p className="dg-change-match">{titleTr(m.home ?? 'Takım')} – {titleTr(m.away ?? 'Takım')}</p>
+                {verifyOnly ? <p className="dg-change-verify">İPTAL DEĞİL · DOĞRULAMA GEREKLİ</p> : rows.length ? <div className="dg-band-rows">{rows.map((r) => <div className="dg-band-row" key={r.key}><span className="dg-band-label"><Icon name={r.icon} size={14} />{r.label}</span><span className="dg-band-vals"><s>{r.from}</s><b className="arrow">➔</b><b className={r.icon === 'pin' ? 'new green' : 'new'}>{r.to}</b></span></div>)}</div> : <p className="dg-change-verify plain">{m.date ? `${formatDate(m.date)} · ${m.time ?? ''}` : 'Kaynak değişikliği'}</p>}
+                {!verifyOnly && changeTouchesDarica(change) && <div className="dg-change-actions"><button type="button" className="dg-btn-emerald" onClick={() => void share(changeShareText([change]), 'Program Değişikliği')}><Icon name="message" size={14} />Veli grubuna bildir</button></div>}
+              </article>;
+            })}</div> : <div className="empty-state"><h3>Yeni değişiklik yok</h3><p>Son doğrulanmış program ile önceki program arasında kayıtlı değişiklik bulunmuyor.</p></div>}</div>
+          </section>
+        </div>}
 
-        {screen === 'posters' && <PosterStudio fixtures={posterFixtures} verified={verified && !stale}/>}
+        {screen === 'posters' && <PosterStudio fixtures={posterFixtures} verified={healthy}/>}
 
         {screen === 'source' && <AskfReviewPanel onApproved={() => window.location.reload()} />}
 
         <footer className="app-footer"><span>DARICA GÜCÜ · V4 PRO</span><span>KOCAELİ ASKF · DOĞRULANMIŞ PROGRAM</span></footer>
       </main>
 
-      <nav className="mobile-nav" aria-label="Mobil gezinme">
-        {navigation.map((item) => <button key={item.id} type="button" className={screen === item.id ? 'mobile-nav-item active' : 'mobile-nav-item'} onClick={() => setScreen(item.id)} aria-current={screen === item.id ? 'page' : undefined}><span className="mobile-nav-mark">{item.short.slice(0, 1)}</span><span>{item.short}</span></button>)}
+      <nav className="dg-bottom-nav" aria-label="Mobil gezinme">
+        {navGroups.map((item) => (
+          <button key={item.id} type="button" className={group.id === item.id ? 'on' : ''} aria-current={group.id === item.id ? 'page' : undefined} onClick={() => setScreen(item.target)}>
+            <Icon name={item.icon} size={22} /><span>{item.short}</span>
+          </button>
+        ))}
       </nav>
+      {screen !== 'dashboard' && toast}
     </div>
   );
 }
