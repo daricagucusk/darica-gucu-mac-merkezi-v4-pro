@@ -1,0 +1,213 @@
+/*
+ * ASKF Veri Merkezi: Stitch "mobil_askf_veri_merkezi" hizası.
+ * Renk, yarıçap ve tipografi değerleri Stitch code.html tailwind-config'inden birebir alındı.
+ * Tüm kurallar .askf-review-panel altında kapsüllenir (styles.css'teki eski tek-sınıf kuralları ezilir).
+ */
+.askf-review-panel {
+  --sf-lowest: #08100d;
+  --sf-low: #151d1a;
+  --sf: #19211e;
+  --sf-high: #232c28;
+  --sf-highest: #2e3733;
+  --sf-bright: #333b37;
+  --primary: #8dd6ae;
+  --primary-container: #0a5c3d;
+  --on-primary: #003823;
+  --secondary: #4ae176;
+  --on-secondary: #003915;
+  --on-surface: #dce5df;
+  --on-surface-variant: #bfc9c0;
+  --outline: #89938b;
+  --outline-variant: #3f4943;
+  --tertiary: #c1c7cf;
+  --error: #ffb4ab;
+  --amber: #e4b765;
+  --f-label: Chivo, Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-body: Outfit, Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 760px;
+  margin: 18px auto 0;
+  padding: 0;
+  color: var(--on-surface);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 20px;
+  background: none;
+  border: 0;
+}
+.askf-review-panel *, .askf-review-panel *::before, .askf-review-panel *::after { box-sizing: border-box; }
+.askf-review-panel > section, .askf-review-panel > div, .askf-review-panel > p, .askf-review-panel > a { min-width: 0; }
+.askf-review-panel .askf-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.askf-review-panel .askf-icon { flex: 0 0 auto; width: 1em; height: 1em; }
+
+/* 1. Üst durum bandı */
+.askf-review-panel .askf-status-band { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 8px; background: var(--sf-high); box-shadow: 0 4px 6px -1px rgba(0,0,0,.3), 0 2px 4px -2px rgba(0,0,0,.3); }
+.askf-review-panel .askf-status-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.askf-review-panel .askf-status-sub { padding-top: 4px; color: var(--on-surface-variant); flex-wrap: wrap; }
+.askf-review-panel .askf-live-label { display: inline-flex; align-items: center; gap: 8px; color: var(--on-surface-variant); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-transform: uppercase; }
+.askf-review-panel .askf-live-label.is-ok { color: var(--secondary); }
+.askf-review-panel .askf-live-label i { width: 8px; height: 8px; border-radius: 50%; background: var(--outline); }
+.askf-review-panel .askf-live-label.is-ok i { background: var(--secondary); box-shadow: 0 0 0 3px rgba(74,225,118,.22); }
+.askf-review-panel .askf-chip { flex: 0 0 auto; display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; background: var(--sf-lowest); color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .08em; white-space: nowrap; margin: 0; border: 0; }
+.askf-review-panel .askf-chip.is-ok { color: var(--secondary); }
+.askf-review-panel .askf-sync-text { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-sync-text .askf-icon { color: var(--primary); font-size: 16px; }
+
+/* 2. Dosya / kaynak kartı */
+.askf-review-panel .askf-file-card { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow: hidden; border-radius: 8px; background: var(--sf); box-shadow: 0 10px 15px -3px rgba(0,0,0,.35), 0 4px 6px -4px rgba(0,0,0,.35); }
+.askf-review-panel .askf-file-card::before { content: ''; position: absolute; top: -48px; right: -48px; width: 144px; height: 144px; border-radius: 50%; background: rgba(10,92,61,.2); filter: blur(24px); pointer-events: none; }
+.askf-review-panel .askf-file-card > * { position: relative; z-index: 1; }
+.askf-review-panel .askf-file-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.askf-review-panel .askf-file-icon { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: var(--sf-highest); color: var(--primary); font-size: 24px; }
+.askf-review-panel .askf-file-title { flex: 1 1 0; min-width: 150px; display: flex; flex-direction: column; margin-right: auto; }
+.askf-review-panel .askf-file-head { gap: 8px; }
+.askf-review-panel .askf-file-title strong { color: var(--on-surface); font: 700 14px/18px var(--f-label); letter-spacing: .05em; text-transform: uppercase; overflow-wrap: anywhere; }
+.askf-review-panel .askf-file-title span { color: var(--primary); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-file-badge { flex: 0 1 auto; max-width: 46%; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; background: var(--primary-container); color: var(--on-primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; overflow-wrap: anywhere; }
+.askf-review-panel .askf-file-badge .askf-icon { color: var(--secondary); font-size: 14px; }
+
+.askf-review-panel .askf-action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.askf-review-panel .askf-select-wrap { position: relative; min-width: 0; }
+.askf-review-panel .askf-select-wrap label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.askf-review-panel .askf-select-wrap select { width: 100%; height: 48px; padding: 0 6px; border: 0; border-radius: 8px; background: var(--sf-highest); color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: 0; cursor: pointer; }
+.askf-review-panel .askf-select-wrap select:hover:not(:disabled) { background: var(--sf-bright); }
+.askf-review-panel .askf-select-wrap select:focus-visible, .askf-review-panel button:focus-visible, .askf-review-panel a:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+.askf-review-panel .askf-btn-check { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: var(--primary-container); color: var(--on-primary); font: 700 12px/16px var(--f-label); letter-spacing: .06em; box-shadow: 0 4px 6px -1px rgba(0,0,0,.3); cursor: pointer; transition: transform .15s, background .15s; }
+.askf-review-panel .askf-btn-check .askf-icon { color: var(--secondary); font-size: 20px; }
+.askf-review-panel .askf-btn-check span { min-width: 0; font-size: 11px; line-height: 14px; letter-spacing: .04em; text-align: left; }
+.askf-review-panel .askf-btn-check:hover:not(:disabled) { background: #0d6b47; }
+.askf-review-panel .askf-btn-check:active:not(:disabled) { transform: scale(.98); }
+.askf-review-panel button:disabled { opacity: .45; cursor: not-allowed; }
+
+.askf-review-panel .askf-quality-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 8px; background: var(--sf-lowest); }
+.askf-review-panel .askf-quality-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.askf-review-panel .askf-micro { color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-transform: uppercase; }
+.askf-review-panel .askf-micro-ok { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary); text-align: right; }
+.askf-review-panel .askf-micro-ok i { width: 6px; height: 6px; border-radius: 50%; background: var(--secondary); }
+.askf-review-panel .askf-quality-name { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--on-surface); font: 500 14px/20px var(--f-body); }
+.askf-review-panel .askf-quality-name .askf-icon { color: var(--primary); font-size: 18px; }
+.askf-review-panel .askf-count-chip { padding: 2px 8px; border-radius: 4px; background: var(--sf-high); color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; white-space: nowrap; }
+.askf-review-panel .askf-quality-meta { color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; }
+.askf-review-panel .askf-note { margin: 0; color: var(--outline); font: 400 12px/16px var(--f-body); }
+
+/* Geri bildirim */
+.askf-review-panel .askf-feedback { margin: 0; padding: 16px; border: 0; border-radius: 8px; font: 500 14px/20px var(--f-body); }
+.askf-review-panel .askf-feedback.success { background: var(--primary-container); color: var(--on-surface); box-shadow: 0 0 0 1px rgba(74,225,118,.3) inset; }
+.askf-review-panel .askf-feedback.error { background: #3a1f1d; color: #ffdad6; box-shadow: 0 0 0 1px rgba(255,180,171,.3) inset; }
+
+/* 3. Bekleyen program / kategori kartları */
+.askf-review-panel .askf-pending-card { display: flex; flex-direction: column; gap: 8px; padding: 0; border: 0; border-radius: 0; background: none; }
+.askf-review-panel .askf-section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 4px; min-width: 0; }
+.askf-review-panel .askf-section-head-spaced { margin-top: 8px; }
+.askf-review-panel .askf-section-title { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-transform: uppercase; }
+.askf-review-panel .askf-section-title .askf-icon { font-size: 18px; color: var(--secondary); }
+.askf-review-panel .askf-archive .askf-section-title .askf-icon { color: var(--tertiary); }
+.askf-review-panel .askf-section-side { color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-align: right; overflow-wrap: anywhere; }
+.askf-review-panel .askf-section-side-primary { color: var(--primary); text-transform: uppercase; }
+
+.askf-review-panel .askf-pending-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 16px; border-radius: 8px; background: var(--sf-high); box-shadow: 0 4px 6px -1px rgba(0,0,0,.3); }
+.askf-review-panel .askf-pending-heading > div { min-width: 0; }
+.askf-review-panel .askf-pending-heading h3 { margin: 4px 0 2px; color: var(--on-surface); font: 700 20px/26px var(--f-label); overflow-wrap: anywhere; }
+.askf-review-panel .askf-pending-heading p { margin: 0; color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-pending-heading .askf-chip { color: var(--secondary); }
+
+.askf-review-panel .askf-change-summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.askf-review-panel .askf-change-summary > div { display: flex; flex-direction: column; gap: 2px; padding: 8px; border: 0; border-radius: 8px; background: var(--sf); min-width: 0; }
+.askf-review-panel .askf-change-summary strong { color: var(--secondary); font: 800 20px/26px var(--f-label); }
+.askf-review-panel .askf-change-summary span { color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .04em; overflow-wrap: anywhere; }
+
+.askf-review-panel .askf-category-card { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 8px; background: var(--sf-high); box-shadow: 0 4px 6px -1px rgba(0,0,0,.3); }
+.askf-review-panel .askf-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.askf-review-panel .askf-category-title { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.askf-review-panel .askf-category-title b { padding: 2px 8px; border-radius: 4px; background: var(--sf-lowest); color: var(--secondary); font: 700 14px/18px var(--f-label); letter-spacing: .05em; white-space: nowrap; }
+.askf-review-panel .askf-category-title span { color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .08em; }
+.askf-review-panel .askf-match-row { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 4px; background: var(--sf); }
+.askf-review-panel .askf-match-teams { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; color: var(--on-surface); font: 600 16px/20px var(--f-body); }
+.askf-review-panel .askf-match-teams span { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; }
+.askf-review-panel .askf-match-teams span:last-child { text-align: right; }
+.askf-review-panel .askf-match-teams span.is-club { color: var(--primary); }
+.askf-review-panel .askf-match-teams em { flex: 0 0 auto; padding: 0 8px; color: var(--on-surface-variant); font: normal 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-match-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-match-meta .askf-icon { color: var(--tertiary); font-size: 16px; }
+.askf-review-panel .askf-match-meta span { white-space: nowrap; }
+.askf-review-panel .askf-match-meta i { color: var(--outline-variant); font-style: normal; }
+.askf-review-panel .askf-match-meta .askf-match-venue { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+
+.askf-review-panel .askf-bay-card { display: flex; align-items: center; gap: 8px; padding: 16px; border-radius: 8px; background: var(--sf-low); opacity: .85; }
+.askf-review-panel .askf-bay-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; background: var(--sf-highest); color: var(--outline); font-size: 18px; flex: 0 0 auto; }
+.askf-review-panel .askf-bay-card div { display: flex; flex-direction: column; min-width: 0; }
+.askf-review-panel .askf-bay-card strong { color: var(--on-surface-variant); font: 700 12px/16px var(--f-label); letter-spacing: .06em; }
+.askf-review-panel .askf-bay-card span:not(.askf-bay-icon) { color: var(--outline); font: 400 12px/16px var(--f-body); }
+
+/* Değişiklik listesi */
+.askf-review-panel .askf-diff-list { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow: auto; border: 0; }
+.askf-review-panel .askf-diff-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 0; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--sf); }
+.askf-review-panel .askf-diff-row > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.askf-review-panel .askf-diff-row strong { color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; }
+.askf-review-panel .askf-diff-row span { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); overflow-wrap: anywhere; }
+.askf-review-panel .askf-diff-row small { color: var(--amber); font: 800 10px/14px var(--f-label); letter-spacing: .08em; }
+.askf-review-panel .askf-diff-row .askf-diff-when { flex: 0 0 auto; text-align: right; white-space: nowrap; }
+.askf-review-panel .askf-source-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 0 4px; color: var(--outline); font: 400 12px/16px var(--f-body); overflow-wrap: anywhere; }
+.askf-review-panel .askf-download-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--sf-highest); color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-decoration: none; }
+.askf-review-panel .askf-download-link .askf-icon { color: var(--primary); font-size: 18px; }
+.askf-review-panel .askf-download-link:hover { background: var(--sf-bright); }
+
+/* Ana aksiyon: Stitch btnApproveAll */
+.askf-review-panel .askf-review-actions { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0; }
+.askf-review-panel .askf-btn-approve { width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 8px 16px; border: 0; border-radius: 8px; background: var(--secondary); color: var(--on-secondary); font: 800 14px/18px var(--f-label); letter-spacing: .05em; text-transform: uppercase; text-align: left; box-shadow: 0 0 24px rgba(74,225,118,.35); cursor: pointer; transition: transform .15s, filter .15s; }
+.askf-review-panel .askf-btn-approve .askf-icon { font-size: 24px; }
+.askf-review-panel .askf-btn-approve span { min-width: 0; }
+.askf-review-panel .askf-btn-approve:hover:not(:disabled) { filter: brightness(1.05); }
+.askf-review-panel .askf-btn-approve:active:not(:disabled) { transform: scale(.99); }
+.askf-review-panel .askf-btn-reject { width: 100%; min-height: 44px; margin: 0; padding: 0 16px; border: 0; border-radius: 8px; background: var(--sf-lowest); color: var(--on-surface-variant); font: 800 10px/14px var(--f-label); letter-spacing: .08em; cursor: pointer; }
+.askf-review-panel .askf-btn-reject:hover:not(:disabled) { color: var(--on-surface); }
+
+/* 4. Arşiv listesi */
+.askf-review-panel .askf-archive { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.askf-review-panel .askf-archive-item { display: flex; align-items: center; gap: 8px; padding: 16px; border-radius: 8px; background: var(--sf); box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.askf-review-panel .askf-archive-item.is-active { background: var(--sf-high); }
+.askf-review-panel .askf-archive-tile { flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: var(--sf-highest); color: var(--on-surface-variant); font: 700 20px/26px var(--f-label); }
+.askf-review-panel .askf-archive-item.is-active .askf-archive-tile { background: var(--primary-container); color: var(--secondary); }
+.askf-review-panel .askf-archive-copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.askf-review-panel .askf-archive-copy strong { display: flex; align-items: center; gap: 8px; color: var(--on-surface); font: 600 18px/24px var(--f-body); }
+.askf-review-panel .askf-archive-copy strong i { width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); flex: 0 0 auto; }
+.askf-review-panel .askf-archive-copy span { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-archive-item.is-active .askf-archive-copy span { color: var(--secondary); }
+.askf-review-panel .askf-btn-icon { flex: 0 0 auto; max-width: 112px; min-height: 44px; margin: 0; padding: 4px 10px; border: 0; border-radius: 8px; background: var(--sf-lowest); color: var(--on-surface); font: 800 10px/14px var(--f-label); letter-spacing: .08em; cursor: pointer; }
+.askf-review-panel .askf-btn-icon:hover:not(:disabled) { color: var(--secondary); }
+
+.askf-review-panel .askf-safety-note { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 0; border-left: 3px solid var(--secondary); border-radius: 8px; background: var(--sf-low); }
+.askf-review-panel .askf-safety-note strong { color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-transform: uppercase; }
+.askf-review-panel .askf-safety-note span { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .askf-source-link { align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; color: var(--primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-decoration: none; }
+.askf-review-panel .askf-source-link:hover { color: var(--secondary); }
+
+/* Yapay zekâ kartı (AiAssistCard) - AI_ENABLED kapalıyken davranış aynı, yalnız görünüm */
+.askf-review-panel .ai-assist { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
+.askf-review-panel .ai-assist .quiet-button { align-self: flex-start; max-width: 100%; min-height: 44px; margin: 0; padding: 0 16px; border: 0; border-radius: 8px; background: var(--sf-highest); color: var(--primary); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-align: left; cursor: pointer; }
+.askf-review-panel .ai-assist .quiet-button:hover:not(:disabled) { background: var(--sf-bright); }
+.askf-review-panel .ai-assist .quiet-note { margin: 0; color: var(--outline); font: 400 12px/16px var(--f-body); }
+.askf-review-panel .ai-assist-result { display: flex; flex-direction: column; gap: 4px; padding: 16px; border-radius: 8px; background: var(--sf-low); box-shadow: 0 0 0 1px rgba(141,214,174,.25) inset; }
+.askf-review-panel .ai-assist-result .eyebrow { color: var(--primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; }
+.askf-review-panel .ai-assist-result p { margin: 0; color: var(--on-surface); font: 400 14px/20px var(--f-body); overflow-wrap: anywhere; }
+.askf-review-panel .ai-assist-result small { color: var(--outline); font: 400 12px/16px var(--f-body); }
+
+@media (max-width: 480px) {
+  .askf-review-panel { margin-top: 12px; }
+  .askf-review-panel .askf-change-summary { gap: 4px; }
+  .askf-review-panel .askf-change-summary > div { padding: 8px 6px; }
+  .askf-review-panel .askf-change-summary span { font-size: 9px; letter-spacing: .02em; }
+  .askf-review-panel .askf-file-head { flex-wrap: wrap; }
+  .askf-review-panel .askf-file-badge { max-width: 100%; order: 3; }
+  .askf-review-panel .askf-diff-row { align-items: flex-start; flex-direction: column; }
+  .askf-review-panel .askf-diff-row .askf-diff-when { text-align: left; }
+  .askf-review-panel .askf-archive-item.askf-rollback-row { flex-wrap: wrap; }
+  .askf-review-panel .askf-btn-icon { max-width: none; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .askf-review-panel * { transition: none !important; }
+}
