@@ -224,11 +224,13 @@ export default function PosterStudio({ fixtures, verified }: Props) {
           )}
 
           {template === 'result' && (
+            <>
             <p className="poster-score-warning">Skor verisi ASKF fikstüründen gelmiyor. Paylaşmadan önce iki takımın sonucunu doğrula.</p>
             <div className="poster-score-fields">
               <label className="poster-field"><span>{selectedFixture?.home ?? 'Ev sahibi'} skoru</span><input inputMode="numeric" type="number" min="0" max="99" value={homeScore} onChange={(event) => setHomeScore(event.target.value)}/></label>
               <label className="poster-field"><span>{selectedFixture?.away ?? 'Deplasman'} skoru</span><input inputMode="numeric" type="number" min="0" max="99" value={awayScore} onChange={(event) => setAwayScore(event.target.value)}/></label>
             </div>
+            </>
           )}
 
           <label className="poster-field poster-upload">
