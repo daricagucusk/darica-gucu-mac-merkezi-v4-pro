@@ -30,7 +30,7 @@ function changedLabel(change: FxChange | undefined): string | null {
 }
 
 function TeamName({ name, own }: { name: string; own: boolean }) {
-  return <span className={own ? 'dg-team own' : 'dg-team'}>{own ? name : titleTr(name)}</span>;
+  return <span className={own ? 'dg-team own' : 'dg-team'}>{titleTr(name)}</span>;
 }
 
 function Logo({ own }: { own: boolean }) {

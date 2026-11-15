@@ -1023,7 +1023,7 @@ h1, h2, h3, h4 { font-family: Chivo, Inter, system-ui, sans-serif; }
 .dg-fxd-teams { display: grid; gap: 6px; padding: 4px 0; font-size: 14px; }
 .dg-fxd-teams > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
 .dg-team { min-width: 0; overflow-wrap: anywhere; color: #e2e8f0; }
-.dg-team.own { color: var(--dg-bright); font-weight: 700; text-transform: uppercase; }
+.dg-team.own { color: var(--dg-bright); font-weight: 700; }
 .dg-tag { flex: none; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.05); color: #94a3b8; font-size: 10px; font-style: normal; }
 .dg-tag.on { background: rgba(0,168,89,.2); color: var(--dg-bright); }
 .dg-fxd-meta { display: grid; gap: 6px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.06); color: #94a3b8; font-size: 12px; }
@@ -1230,8 +1230,7 @@ h1, h2, h3, h4 { font-family: Chivo, Inter, system-ui, sans-serif; }
   .dg-facility-txt { flex: 1; }
   .dg-facility-body { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
   .dg-facility-body.closed { display: none; }
-  .dg-facility-map { position: relative; height: 176px; align-items: flex-end; justify-content: space-between; padding: 10px; border-radius: 8px; overflow: hidden;
-    background: linear-gradient(to top, rgba(8,16,13,.9), rgba(8,16,13,.2)), repeating-linear-gradient(0deg, rgba(141,214,174,.06) 0 1px, transparent 1px 28px), repeating-linear-gradient(90deg, rgba(141,214,174,.06) 0 1px, transparent 1px 28px), linear-gradient(135deg, #0a5c3d33, #151d1a); box-shadow: inset 0 2px 6px rgba(0,0,0,.4); }
+  .dg-facility-map { align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0 0; }
   .dg-facility-chip { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px 10px; border-radius: 6px; background: rgba(8,16,13,.85); color: #dce5df; font: 800 10px var(--dg-head); letter-spacing: .08em; }
   .dg-facility-map a { flex: none; min-height: 44px; padding: 4px 10px; border: 0; border-radius: 4px; background: var(--dg-secondary); color: var(--dg-sc-lowest); font: 800 10px var(--dg-head); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
   .dg-facility-map a:hover { background: var(--dg-secondary); }
@@ -1251,6 +1250,10 @@ h1, h2, h3, h4 { font-family: Chivo, Inter, system-ui, sans-serif; }
   .dg-foot-note { display: none; }
   .dg-change-list { grid-template-columns: 1fr; }
   .dg-fxm-grid { padding: 12px; }
+  /* Mobil sıra (mobil_mac_ajandasi): sıradaki maç önce, ardından uyarı bandı ve sponsor bandı */
+  .dg-hm, .dg-empty-hero { order: -3; }
+  .dg-band { order: -2; }
+  .dg-ticker { order: -1; }
   .dg-bottom-nav { position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; height: calc(64px + env(safe-area-inset-bottom)); padding: 0 4px env(safe-area-inset-bottom); background: rgba(8,16,13,.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 -4px 28px rgba(0,0,0,.65); }
   .dg-bottom-nav button { height: 56px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 12px; background: transparent; color: var(--dg-on-sv); font: 800 10px var(--dg-head); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
   .dg-bottom-nav button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; }

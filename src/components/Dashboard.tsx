@@ -242,6 +242,7 @@ export default function Dashboard({ metrics, daricaMatches, changes, verified, c
           </button>
           {(
             <div className={facilityOpen ? 'dg-facility-body' : 'dg-facility-body closed'}>
+              {/* Gerçek harita görseli yok (sahte harita çizilmez): yalnız saha adı + gerçek Google Maps aramasını açan Navigasyon düğmesi. */}
               <div className="dg-facility-map">
                 <span className="dg-facility-chip"><Icon name="pin" size={16} className="green" /><span className="dg-trunc">{titleTr(facilityMatch.venue)}</span></span>
                 <a href={mapsUrl(facilityMatch.venue)} target="_blank" rel="noopener noreferrer"><span className="dg-nav-m">Navigasyon</span><span className="dg-nav-d">Yol Tarifi Al</span> <Icon name="external" size={13} /></a>
