@@ -1,0 +1,786 @@
+{
+  "_doc": "Stitch ekran görüntüsü mock yanıtları. Anahtar: \"/api/yol\" veya \"METHOD /api/yol\" (önce METHOD ile eşleşir). Değer: {status, body}. Yeni uç eklemek için bir anahtar ekle. Gerçek oyuncu verisi yok; maçlar tests/fixtures ASKF dosyalarından (010/011.HAFTA) türetildi, değişiklikler/onay bekleyen kayıt örnektir. Dondurulmuş saat: 2026-11-09T10:00+03:00 (betikte).",
+  "clock": "2026-11-09T10:00:00+03:00",
+  "routes": {
+    "/api/live": {
+      "status": 200,
+      "body": {
+        "status": "verified",
+        "freshness": "fresh",
+        "sourceStatus": "verified",
+        "sourceFile": "010.HAFTA PROGRAM.xls",
+        "sourceWeek": 10,
+        "season": "2026-2027",
+        "sourceHash": "a3f5c8e1d2b47690f1e2d3c4b5a69788a3f5c8e1d2b47690f1e2d3c4b5a69788",
+        "checkedAt": "2026-11-09T07:30:00.000Z",
+        "matches": [
+          {
+            "id": "2026-2027|U12|kocaeli okan spor|uctepe spor|2026-11-06|18:00|avni kalkavan stadi 1",
+            "group": "U12",
+            "date": "2026-11-06",
+            "time": "18:00",
+            "home": "KOCAELİ OKAN SPOR",
+            "away": "ÜÇTEPE SPOR",
+            "venue": "AVNİ KALKAVAN STADI 1",
+            "field": "AVNİ KALKAVAN STADI 1",
+            "status": "scheduled",
+            "sourceRow": 6
+          },
+          {
+            "id": "2026-2027|U12|kocaeli 1937 seka spor|izmit ayazma spor|2026-11-06|18:00|avni kalkavan stadi 2",
+            "group": "U12",
+            "date": "2026-11-06",
+            "time": "18:00",
+            "home": "KOCAELİ 1937 SEKA SPOR",
+            "away": "İZMİT AYAZMA SPOR",
+            "venue": "AVNİ KALKAVAN STADI 2",
+            "field": "AVNİ KALKAVAN STADI 2",
+            "status": "scheduled",
+            "sourceRow": 7
+          },
+          {
+            "id": "2026-2027|U12|darica kartalgucu spor|darica 1934 g b spor|2026-11-06|18:00|darica nene hatun stadi 1",
+            "group": "U12",
+            "date": "2026-11-06",
+            "time": "18:00",
+            "home": "DARICA KARTALGÜCÜ SPOR",
+            "away": "DARICA 1934 G.B SPOR",
+            "venue": "DARICA NENE HATUN STADI 1",
+            "field": "DARICA NENE HATUN STADI 1",
+            "status": "scheduled",
+            "sourceRow": 17
+          },
+          {
+            "id": "2026-2027|U14|yazlik spor|degirmendere fola spor|2026-11-06|19:00|kavakli stadi",
+            "group": "U14",
+            "date": "2026-11-06",
+            "time": "19:00",
+            "home": "YAZLIK SPOR",
+            "away": "DEĞİRMENDERE FOLA SPOR",
+            "venue": "KAVAKLI STADI",
+            "field": "KAVAKLI STADI",
+            "status": "scheduled",
+            "sourceRow": 12
+          },
+          {
+            "id": "2026-2027|U17|yenidogan serdar spor|derince birlik spor|2026-11-06|19:00|mehmet ali kagitci stadi",
+            "group": "U17",
+            "date": "2026-11-06",
+            "time": "19:00",
+            "home": "YENİDOĞAN SERDAR SPOR",
+            "away": "DERİNCE BİRLİK SPOR",
+            "venue": "MEHMET ALİ KAĞITÇI STADI",
+            "field": "MEHMET ALİ KAĞITÇI STADI",
+            "status": "scheduled",
+            "sourceRow": 5
+          },
+          {
+            "id": "2026-2027|U17|alikahya belediye spor|derince sirripasa f k|2026-11-06|19:00|alikahya nasut kayali stadyumu",
+            "group": "U17",
+            "date": "2026-11-06",
+            "time": "19:00",
+            "home": "ALİKAHYA BELEDİYE SPOR",
+            "away": "DERİNCE SIRRIPAŞA F.K",
+            "venue": "ALİKAHYA NASUT KAYALI STADYUMU",
+            "field": "ALİKAHYA NASUT KAYALI STADYUMU",
+            "status": "scheduled",
+            "sourceRow": 9
+          },
+          {
+            "id": "2026-2027|U17|hisareyn spor|seka dogan spor|2026-11-06|19:00|golcuk metin uzuner stadi",
+            "group": "U17",
+            "date": "2026-11-06",
+            "time": "19:00",
+            "home": "HİSAREYN SPOR",
+            "away": "SEKA DOĞAN SPOR",
+            "venue": "GÖLCÜK METİN UZUNER STADI",
+            "field": "GÖLCÜK METİN UZUNER STADI",
+            "status": "scheduled",
+            "sourceRow": 11
+          },
+          {
+            "id": "2026-2027|U14|41 karadeniz sportif fall|gebze tayfun spor|2026-11-07|11:00|gebze pelitli stadi",
+            "group": "U14",
+            "date": "2026-11-07",
+            "time": "11:00",
+            "home": "41 KARADENİZ SPORTİF FALL",
+            "away": "GEBZE TAYFUN SPOR",
+            "venue": "GEBZE PELİTLİ STADI",
+            "field": "GEBZE PELİTLİ STADI",
+            "status": "scheduled",
+            "sourceRow": 94
+          },
+          {
+            "id": "2026-2027|U16|kocaeli gunes spor|basaksehir samlar spor kulubu|2026-11-07|11:00|mehmet ali kagitci stadi",
+            "group": "U16",
+            "date": "2026-11-07",
+            "time": "11:00",
+            "home": "KOCAELİ GÜNEŞ SPOR",
+            "away": "BAŞAKŞEHİR ŞAMLAR SPOR KULÜBÜ",
+            "venue": "MEHMET ALİ KAĞITÇI STADI",
+            "field": "MEHMET ALİ KAĞITÇI STADI",
+            "status": "scheduled",
+            "sourceRow": 26
+          },
+          {
+            "id": "2026-2027|U16|yesilova spor|beylerbeyi 1911 futbol kulubu|2026-11-07|11:00|cephanelik stadi",
+            "group": "U16",
+            "date": "2026-11-07",
+            "time": "11:00",
+            "home": "YEŞİLOVA SPOR",
+            "away": "BEYLERBEYİ 1911 FUTBOL KULÜBÜ",
+            "venue": "CEPHANELİK STADI",
+            "field": "CEPHANELİK STADI",
+            "status": "scheduled",
+            "sourceRow": 41
+          },
+          {
+            "id": "2026-2027|U16|kullar 1975 spor|albayrak spor|2026-11-07|11:00|kullar suni cim stadi",
+            "group": "U16",
+            "date": "2026-11-07",
+            "time": "11:00",
+            "home": "KULLAR 1975 SPOR",
+            "away": "ALBAYRAK SPOR",
+            "venue": "KULLAR SUNİ ÇİM STADI",
+            "field": "KULLAR SUNİ ÇİM STADI",
+            "status": "scheduled",
+            "sourceRow": 48
+          },
+          {
+            "id": "2026-2027|U14|gebze balcikkoyu spor|taner aygun yavuz selim spor|2026-11-07|12:00|beylikbagi stadi",
+            "group": "U14",
+            "date": "2026-11-07",
+            "time": "12:00",
+            "home": "GEBZE BALÇIKKÖYÜ SPOR",
+            "away": "TANER AYGÜN YAVUZ SELİM SPOR",
+            "venue": "BEYLİKBAĞI STADI",
+            "field": "BEYLİKBAĞI STADI",
+            "status": "scheduled",
+            "sourceRow": 89
+          },
+          {
+            "id": "2026-2027|U12|darica cinaralti spor|darica gucu spor|2026-11-09|18:00|darica nenehatun stadi 1",
+            "group": "U12",
+            "date": "2026-11-09",
+            "time": "18:00",
+            "home": "DARICA ÇINARALTI SPOR",
+            "away": "DARICA GÜCÜ SPOR",
+            "venue": "DARICA NENEHATUN STADI 1",
+            "field": "DARICA NENEHATUN STADI 1",
+            "status": "scheduled",
+            "sourceRow": 219
+          },
+          {
+            "id": "2026-2027|U14|darica gucu spor|cayirova serhat spor|2026-11-10|19:15|darica nenehatun stadi",
+            "group": "U14",
+            "date": "2026-11-10",
+            "time": "19:15",
+            "home": "DARICA GÜCÜ SPOR",
+            "away": "ÇAYIROVA SERHAT SPOR",
+            "venue": "DARICA NENEHATUN STADI",
+            "field": "DARICA NENEHATUN STADI",
+            "status": "scheduled",
+            "sourceRow": 246
+          },
+          {
+            "id": "2026-2027|U19|derince yavuz spor|darica 1934 g b spor|2026-11-11|12:00|derince suni cim stadi",
+            "group": "U19",
+            "date": "2026-11-11",
+            "time": "12:00",
+            "home": "DERİNCE YAVUZ SPOR",
+            "away": "DARICA 1934 G.B SPOR",
+            "venue": "DERİNCE SUNİ ÇİM STADI",
+            "field": "DERİNCE SUNİ ÇİM STADI",
+            "status": "scheduled",
+            "sourceRow": 276
+          },
+          {
+            "id": "2026-2027|U19|arslanbey g b spor|ayazaga spor|2026-11-11|14:00|arslanbey stadi",
+            "group": "U19",
+            "date": "2026-11-11",
+            "time": "14:00",
+            "home": "ARSLANBEY G.B SPOR",
+            "away": "AYAZAĞA SPOR",
+            "venue": "ARSLANBEY STADI",
+            "field": "ARSLANBEY STADI",
+            "status": "scheduled",
+            "sourceRow": 262
+          },
+          {
+            "id": "2026-2027|U19|kullar 1975 spor|inkilap futbol spor kulubu|2026-11-11|14:00|kullar dogal cim stadi",
+            "group": "U19",
+            "date": "2026-11-11",
+            "time": "14:00",
+            "home": "KULLAR 1975 SPOR",
+            "away": "İNKILAP FUTBOL SPOR KULÜBÜ",
+            "venue": "KULLAR DOĞAL ÇİM STADI",
+            "field": "KULLAR DOĞAL ÇİM STADI",
+            "status": "scheduled",
+            "sourceRow": 265
+          },
+          {
+            "id": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+            "group": "U14",
+            "date": "2026-11-12",
+            "time": "19:00",
+            "home": "DİLOVASI SPOR",
+            "away": "DARICA GÜCÜ SPOR",
+            "venue": "ŞEHİT NİHAT KARADAŞ STADI",
+            "field": "ŞEHİT NİHAT KARADAŞ STADI",
+            "status": "scheduled",
+            "sourceRow": 308
+          }
+        ],
+        "daricaMatches": [
+          {
+            "id": "2026-2027|U12|darica cinaralti spor|darica gucu spor|2026-11-09|18:00|darica nenehatun stadi 1",
+            "group": "U12",
+            "date": "2026-11-09",
+            "time": "18:00",
+            "home": "DARICA ÇINARALTI SPOR",
+            "away": "DARICA GÜCÜ SPOR",
+            "venue": "DARICA NENEHATUN STADI 1",
+            "field": "DARICA NENEHATUN STADI 1",
+            "status": "scheduled",
+            "sourceRow": 219
+          },
+          {
+            "id": "2026-2027|U14|darica gucu spor|cayirova serhat spor|2026-11-10|19:15|darica nenehatun stadi",
+            "group": "U14",
+            "date": "2026-11-10",
+            "time": "19:15",
+            "home": "DARICA GÜCÜ SPOR",
+            "away": "ÇAYIROVA SERHAT SPOR",
+            "venue": "DARICA NENEHATUN STADI",
+            "field": "DARICA NENEHATUN STADI",
+            "status": "scheduled",
+            "sourceRow": 246
+          },
+          {
+            "id": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+            "group": "U14",
+            "date": "2026-11-12",
+            "time": "19:00",
+            "home": "DİLOVASI SPOR",
+            "away": "DARICA GÜCÜ SPOR",
+            "venue": "ŞEHİT NİHAT KARADAŞ STADI",
+            "field": "ŞEHİT NİHAT KARADAŞ STADI",
+            "status": "scheduled",
+            "sourceRow": 308
+          }
+        ],
+        "changes": [
+          {
+            "fixtureId": "2026-2027|U14|darica gucu spor|cayirova serhat spor|2026-11-10|19:15|darica nenehatun stadi",
+            "type": "kickoff_changed",
+            "previous": {
+              "id": "2026-2027|U14|darica gucu spor|cayirova serhat spor|2026-11-10|19:15|darica nenehatun stadi",
+              "group": "U14",
+              "date": "2026-11-10",
+              "time": "18:15",
+              "home": "DARICA GÜCÜ SPOR",
+              "away": "ÇAYIROVA SERHAT SPOR",
+              "venue": "DARICA NENEHATUN STADI"
+            },
+            "current": {
+              "id": "2026-2027|U14|darica gucu spor|cayirova serhat spor|2026-11-10|19:15|darica nenehatun stadi",
+              "group": "U14",
+              "date": "2026-11-10",
+              "time": "19:15",
+              "home": "DARICA GÜCÜ SPOR",
+              "away": "ÇAYIROVA SERHAT SPOR",
+              "venue": "DARICA NENEHATUN STADI"
+            }
+          },
+          {
+            "fixtureId": "2026-2027|U12|darica cinaralti spor|darica gucu spor|2026-11-09|18:00|darica nenehatun stadi 1",
+            "type": "venue_changed",
+            "previous": {
+              "id": "2026-2027|U12|darica cinaralti spor|darica gucu spor|2026-11-09|18:00|darica nenehatun stadi 1",
+              "group": "U12",
+              "date": "2026-11-09",
+              "time": "18:00",
+              "home": "DARICA ÇINARALTI SPOR",
+              "away": "DARICA GÜCÜ SPOR",
+              "venue": "DARICA NENEHATUN STADI"
+            },
+            "current": {
+              "id": "2026-2027|U12|darica cinaralti spor|darica gucu spor|2026-11-09|18:00|darica nenehatun stadi 1",
+              "group": "U12",
+              "date": "2026-11-09",
+              "time": "18:00",
+              "home": "DARICA ÇINARALTI SPOR",
+              "away": "DARICA GÜCÜ SPOR",
+              "venue": "DARICA NENEHATUN STADI 1"
+            }
+          },
+          {
+            "fixtureId": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+            "type": "teams_changed",
+            "previous": {
+              "id": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+              "group": "U13",
+              "date": "2026-11-12",
+              "time": "19:00",
+              "home": "DİLOVASI SPOR",
+              "away": "DARICA GÜCÜ SPOR",
+              "venue": "ŞEHİT NİHAT KARADAŞ STADI"
+            },
+            "current": {
+              "id": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+              "group": "U14",
+              "date": "2026-11-12",
+              "time": "19:00",
+              "home": "DİLOVASI SPOR",
+              "away": "DARICA GÜCÜ SPOR",
+              "venue": "ŞEHİT NİHAT KARADAŞ STADI"
+            }
+          },
+          {
+            "fixtureId": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+            "type": "missing",
+            "status": "verification_required",
+            "previous": {
+              "id": "2026-2027|U14|dilovasi spor|darica gucu spor|2026-11-12|19:00|sehit nihat karadas stadi",
+              "group": "U14",
+              "date": "2026-11-12",
+              "time": "19:00",
+              "home": "DİLOVASI SPOR",
+              "away": "DARICA GÜCÜ SPOR",
+              "venue": "ŞEHİT NİHAT KARADAŞ STADI"
+            }
+          }
+        ],
+        "notices": []
+      }
+    },
+    "/api/source-status": {
+      "status": 200,
+      "body": {
+        "state": "pending_review",
+        "lastSuccess": "2026-11-10T15:00:00.000Z",
+        "lastAttempt": "2026-11-10T15:00:04.000Z",
+        "lastError": null,
+        "schedule": "weekly",
+        "sourceFile": "010.HAFTA PROGRAM.xls",
+        "sourceWeek": 10,
+        "sourceSeason": "2026-2027",
+        "sourceHash": "a3f5c8e1d2b47690f1e2d3c4b5a69788a3f5c8e1d2b47690f1e2d3c4b5a69788",
+        "matchesCount": 245,
+        "daricaMatchCount": 3,
+        "pending": true,
+        "pendingHash": "b91d4e7a0c2f58163d9e7a4b1c0f2e55b91d4e7a0c2f58163d9e7a4b1c0f2e55",
+        "pendingFile": "011.HAFTA PROGRAM.xls",
+        "pendingStagedAt": "2026-11-10T15:00:03.000Z",
+        "rollbackAvailable": true,
+        "settings": {
+          "frequency": "weekly"
+        },
+        "pendingReview": {
+          "state": "pending_review",
+          "stagedAt": "2026-11-10T15:00:03.000Z",
+          "snapshot": {
+            "sourceFile": "011.HAFTA PROGRAM.xls",
+            "sourceWeek": 11,
+            "season": "2026-2027",
+            "sourceHash": "b91d4e7a0c2f58163d9e7a4b1c0f2e55b91d4e7a0c2f58163d9e7a4b1c0f2e55",
+            "checkedAt": "2026-11-10T15:00:03.000Z",
+            "matches": [
+              {
+                "id": "2026-2027|U12|darica birlik spor|darica cinaralti spor|2026-11-13|18:00|darica nene hatun stadi 1",
+                "group": "U12",
+                "date": "2026-11-13",
+                "time": "18:00",
+                "home": "DARICA BİRLİK SPOR",
+                "away": "DARICA ÇINARALTI SPOR",
+                "venue": "DARICA NENE HATUN STADI 1"
+              },
+              {
+                "id": "2026-2027|U12|darica 1934 g b spor|darica idmanyurdu spor|2026-11-13|18:00|darica nene hatun stadi 2",
+                "group": "U12",
+                "date": "2026-11-13",
+                "time": "18:00",
+                "home": "DARICA 1934 G.B SPOR",
+                "away": "DARICA İDMANYURDU SPOR",
+                "venue": "DARICA NENE HATUN STADI 2"
+              },
+              {
+                "id": "2026-2027|U14|seka dogan spor|basiskele birlik spor|2026-11-13|19:00|kavakli stadi",
+                "group": "U14",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "SEKA DOĞAN SPOR",
+                "away": "BAŞİSKELE BİRLİK SPOR",
+                "venue": "KAVAKLI STADI"
+              },
+              {
+                "id": "2026-2027|U14|karamursel spor|basiskele yildiz spor|2026-11-13|19:00|karamursel stadi",
+                "group": "U14",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "KARAMÜRSEL SPOR",
+                "away": "BAŞİSKELE YILDIZ SPOR",
+                "venue": "KARAMÜRSEL STADI"
+              },
+              {
+                "id": "2026-2027|U14|ilimtepe g b spor|tavsantepe spor|2026-11-13|19:00|korfez esentepe stadi",
+                "group": "U14",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "İLİMTEPE G.B SPOR",
+                "away": "TAVŞANTEPE SPOR",
+                "venue": "KÖRFEZ ESENTEPE STADI"
+              },
+              {
+                "id": "2026-2027|U17|izmit cenesuyuplajyolu spor|korfez g b spor|2026-11-13|19:00|avni kalkavan stadi",
+                "group": "U17",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "İZMİT ÇENESUYUPLAJYOLU SPOR",
+                "away": "KÖRFEZ G.B SPOR",
+                "venue": "AVNİ KALKAVAN STADI"
+              },
+              {
+                "id": "2026-2027|U17|alikahya bld spor|kartepe suadiye spor|2026-11-13|19:00|alikahya nasut kayali stadyumu",
+                "group": "U17",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "ALİKAHYA BLD.SPOR",
+                "away": "KARTEPE SUADİYE SPOR",
+                "venue": "ALİKAHYA NASUT KAYALI STADYUMU"
+              },
+              {
+                "id": "2026-2027|U17|derince birlik spor|arslanbey g b spor|2026-11-13|19:00|derince suni cim stadi",
+                "group": "U17",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "DERİNCE BİRLİK SPOR",
+                "away": "ARSLANBEY G.B SPOR",
+                "venue": "DERİNCE SUNİ ÇİM STADI"
+              },
+              {
+                "id": "2026-2027|U19|yenidogan serdar spor|cayirtepe genclik spor|2026-11-13|19:00|mehmet ali kagitci stadi",
+                "group": "U19",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "YENİDOĞAN SERDAR SPOR",
+                "away": "ÇAYIRTEPE GENÇLİK SPOR",
+                "venue": "MEHMET ALİ KAĞITÇI STADI"
+              },
+              {
+                "id": "2026-2027|U19|kocaeli yenisehir spor|korfez ilcesi birlik spor|2026-11-13|19:00|cephanelik stadi",
+                "group": "U19",
+                "date": "2026-11-13",
+                "time": "19:00",
+                "home": "KOCAELİ YENİŞEHİR SPOR",
+                "away": "KÖRFEZ İLÇESİ BİRLİK SPOR",
+                "venue": "CEPHANELİK STADI"
+              },
+              {
+                "id": "2026-2027|U19|yuvacik spor|golcuk sirinkoy spor|2026-11-13|19:15|sehit ilyas bayraktutar stadi",
+                "group": "U19",
+                "date": "2026-11-13",
+                "time": "19:15",
+                "home": "YUVACIK SPOR",
+                "away": "GÖLCÜK ŞİRİNKÖY SPOR",
+                "venue": "ŞEHİT İLYAS BAYRAKTUTAR STADI"
+              },
+              {
+                "id": "2026-2027|U12|izmit g b spor|kocaeli 1937 seka spor|2026-11-14|11:00|mehmet ali kagitci stadi 1",
+                "group": "U12",
+                "date": "2026-11-14",
+                "time": "11:00",
+                "home": "İZMİT  G.B SPOR",
+                "away": "KOCAELİ 1937 SEKA SPOR",
+                "venue": "MEHMET ALİ KAĞITÇI STADI 1"
+              },
+              {
+                "id": "2026-2027|U16|tavsantepe spor|harmanlik spor|2026-11-14|11:00|cephanelik stadi",
+                "group": "U16",
+                "date": "2026-11-14",
+                "time": "11:00",
+                "home": "TAVŞANTEPE SPOR",
+                "away": "HARMANLIK SPOR",
+                "venue": "CEPHANELİK STADI"
+              },
+              {
+                "id": "2026-2027|U16|guzide gebze spor|hudavendigar dikkaldirm spor|2026-11-14|11:00|salih gun tavsancil stadi",
+                "group": "U16",
+                "date": "2026-11-14",
+                "time": "11:00",
+                "home": "GÜZİDE GEBZE SPOR",
+                "away": "HÜDAVENDİGAR DİKKALDIRM SPOR",
+                "venue": "SALİH GÜN TAVŞANCIL STADI"
+              },
+              {
+                "id": "2026-2027|U16|darica 1934 g b spor|pendik gullubaglar spor|2026-11-14|11:00|darica nenehatun stadi",
+                "group": "U16",
+                "date": "2026-11-14",
+                "time": "11:00",
+                "home": "DARICA 1934 G.B SPOR",
+                "away": "PENDİK GÜLLÜBAĞLAR SPOR",
+                "venue": "DARICA NENEHATUN STADI"
+              },
+              {
+                "id": "2026-2027|U12|darica gucu spor|darica marmara osmangazi spor|2026-11-15|14:26|darica nene hatun stadi 2",
+                "group": "U12",
+                "date": "2026-11-15",
+                "time": "14:26",
+                "home": "DARICA GÜCÜ SPOR",
+                "away": "DARICA MARMARA OSMANGAZİ SPOR",
+                "venue": "DARICA NENE HATUN STADI 2"
+              },
+              {
+                "id": "2026-2027|U14|gebze sultanorhan spor|darica gucu spor|2026-11-16|17:00|beylikbagi stadi",
+                "group": "U14",
+                "date": "2026-11-16",
+                "time": "17:00",
+                "home": "GEBZE SULTANORHAN SPOR",
+                "away": "DARICA GÜCÜ SPOR",
+                "venue": "BEYLİKBAĞI STADI"
+              },
+              {
+                "id": "2026-2027|U14|darica gucu spor|tavsanli spor|2026-11-18|15:00|darica nenehatun stadi",
+                "group": "U14",
+                "date": "2026-11-18",
+                "time": "15:00",
+                "home": "DARICA GÜCÜ SPOR",
+                "away": "TAVŞANLI SPOR",
+                "venue": "DARICA NENEHATUN STADI"
+              }
+            ],
+            "daricaMatches": [
+              {
+                "id": "2026-2027|U12|darica gucu spor|darica marmara osmangazi spor|2026-11-15|14:26|darica nene hatun stadi 2",
+                "group": "U12",
+                "date": "2026-11-15",
+                "time": "14:26",
+                "home": "DARICA GÜCÜ SPOR",
+                "away": "DARICA MARMARA OSMANGAZİ SPOR",
+                "venue": "DARICA NENE HATUN STADI 2"
+              },
+              {
+                "id": "2026-2027|U14|gebze sultanorhan spor|darica gucu spor|2026-11-16|17:00|beylikbagi stadi",
+                "group": "U14",
+                "date": "2026-11-16",
+                "time": "17:00",
+                "home": "GEBZE SULTANORHAN SPOR",
+                "away": "DARICA GÜCÜ SPOR",
+                "venue": "BEYLİKBAĞI STADI"
+              },
+              {
+                "id": "2026-2027|U14|darica gucu spor|tavsanli spor|2026-11-18|15:00|darica nenehatun stadi",
+                "group": "U14",
+                "date": "2026-11-18",
+                "time": "15:00",
+                "home": "DARICA GÜCÜ SPOR",
+                "away": "TAVŞANLI SPOR",
+                "venue": "DARICA NENEHATUN STADI"
+              }
+            ],
+            "changes": [
+              {
+                "fixtureId": "2026-2027|U12|darica gucu spor|darica marmara osmangazi spor|2026-11-15|14:26|darica nene hatun stadi 2",
+                "type": "added",
+                "current": {
+                  "id": "2026-2027|U12|darica gucu spor|darica marmara osmangazi spor|2026-11-15|14:26|darica nene hatun stadi 2",
+                  "group": "U12",
+                  "date": "2026-11-15",
+                  "time": "14:26",
+                  "home": "DARICA GÜCÜ SPOR",
+                  "away": "DARICA MARMARA OSMANGAZİ SPOR",
+                  "venue": "DARICA NENE HATUN STADI 2"
+                }
+              },
+              {
+                "fixtureId": "2026-2027|U14|gebze sultanorhan spor|darica gucu spor|2026-11-16|17:00|beylikbagi stadi",
+                "type": "added",
+                "current": {
+                  "id": "2026-2027|U14|gebze sultanorhan spor|darica gucu spor|2026-11-16|17:00|beylikbagi stadi",
+                  "group": "U14",
+                  "date": "2026-11-16",
+                  "time": "17:00",
+                  "home": "GEBZE SULTANORHAN SPOR",
+                  "away": "DARICA GÜCÜ SPOR",
+                  "venue": "BEYLİKBAĞI STADI"
+                }
+              },
+              {
+                "fixtureId": "2026-2027|U14|darica gucu spor|tavsanli spor|2026-11-18|15:00|darica nenehatun stadi",
+                "type": "added",
+                "current": {
+                  "id": "2026-2027|U14|darica gucu spor|tavsanli spor|2026-11-18|15:00|darica nenehatun stadi",
+                  "group": "U14",
+                  "date": "2026-11-18",
+                  "time": "15:00",
+                  "home": "DARICA GÜCÜ SPOR",
+                  "away": "TAVŞANLI SPOR",
+                  "venue": "DARICA NENEHATUN STADI"
+                }
+              },
+              {
+                "fixtureId": "2026-2027|U12|darica birlik spor|darica cinaralti spor|2026-11-13|18:00|darica nene hatun stadi 1",
+                "type": "kickoff_changed",
+                "previous": {
+                  "id": "2026-2027|U12|darica birlik spor|darica cinaralti spor|2026-11-13|18:00|darica nene hatun stadi 1",
+                  "group": "U12",
+                  "date": "2026-11-13",
+                  "time": "10:00",
+                  "home": "DARICA BİRLİK SPOR",
+                  "away": "DARICA ÇINARALTI SPOR",
+                  "venue": "DARICA NENE HATUN STADI 1"
+                },
+                "current": {
+                  "id": "2026-2027|U12|darica birlik spor|darica cinaralti spor|2026-11-13|18:00|darica nene hatun stadi 1",
+                  "group": "U12",
+                  "date": "2026-11-13",
+                  "time": "18:00",
+                  "home": "DARICA BİRLİK SPOR",
+                  "away": "DARICA ÇINARALTI SPOR",
+                  "venue": "DARICA NENE HATUN STADI 1"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "status": 200,
+      "body": {
+        "vapidPublicKey": null,
+        "unreadCount": 2,
+        "notifications": [
+          {
+            "id": "n1",
+            "type": "askf_pending_review",
+            "title": "Yeni ASKF programı onay bekliyor",
+            "body": "011. hafta · 4 değişiklik incelenmeyi bekliyor.",
+            "createdAt": "2026-11-10T15:00:05.000Z",
+            "readAt": null,
+            "href": "#/source"
+          },
+          {
+            "id": "n2",
+            "type": "match_reminder",
+            "title": "Yarın maç var: U14 Dilovası Spor – Darıca Gücü",
+            "body": "12 Kasım 19:00 · Şehit Nihat Karadaş Stadı",
+            "createdAt": "2026-11-11T08:00:00.000Z",
+            "readAt": null,
+            "href": "#/matches"
+          },
+          {
+            "id": "n3",
+            "type": "source_issue",
+            "title": "Kaynak kontrolü bir kez başarısız oldu",
+            "body": "Son doğrulanmış program korunuyor.",
+            "createdAt": "2026-11-03T15:00:00.000Z",
+            "readAt": "2026-11-03T16:00:00.000Z",
+            "href": "#/source"
+          }
+        ]
+      }
+    },
+    "POST /api/notifications": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    "POST /api/askf-check": {
+      "status": 200,
+      "body": {
+        "status": "unchanged"
+      }
+    },
+    "POST /api/askf-settings": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    "POST /api/askf-review": {
+      "status": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    "POST /api/ai-assist": {
+      "status": 200,
+      "body": {
+        "status": "disabled",
+        "reason": "Yapay zekâ özelliği kapalı."
+      }
+    },
+    "/api/askf-download": {
+      "status": 404,
+      "body": {
+        "error": "Mock"
+      }
+    },
+    "/api/push-subscribe": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    "/api/push-unsubscribe": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    },
+    "/api/players": {
+      "status": 200,
+      "body": {
+        "players": [
+          {
+            "id": "test-oyuncu-01",
+            "number": 7,
+            "name": "Test Oyuncu 1",
+            "position": "Orta Saha",
+            "team": "U-14",
+            "hasPhoto": false,
+            "updatedAt": "2026-11-09T07:00:00.000Z"
+          },
+          {
+            "id": "test-oyuncu-02",
+            "number": 10,
+            "name": "Test Oyuncu 2",
+            "position": "Forvet",
+            "team": "U-14",
+            "hasPhoto": false,
+            "updatedAt": "2026-11-09T07:00:00.000Z"
+          }
+        ]
+      }
+    },
+    "/api/weather": {
+      "status": 200,
+      "body": {
+        "available": false,
+        "source": "Open-Meteo (CC BY 4.0)"
+      }
+    },
+    "POST /api/players": {
+      "status": 200,
+      "body": {
+        "player": {
+          "id": "test-oyuncu-03",
+          "number": 9,
+          "name": "Test Oyuncu 3",
+          "position": "",
+          "team": "U-14",
+          "hasPhoto": false,
+          "updatedAt": "2026-11-09T07:00:00.000Z"
+        }
+      }
+    },
+    "DELETE /api/players": {
+      "status": 200,
+      "body": {
+        "ok": true
+      }
+    }
+  }
+}

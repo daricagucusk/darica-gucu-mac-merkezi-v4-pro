@@ -1,0 +1,94 @@
+/*
+ * Bildirim çekmecesi: Stitch (mobil_askf_veri_merkezi başlığındaki "Bildirimler" düğmesi + toast/kart dili).
+ * Renkler Stitch tailwind-config'inden birebir. Kurallar .notification-root altında kapsüllenir;
+ * styles.css'teki eski tek-sınıf kuralları daha özgül seçiciyle ezilir.
+ * Not: Stitch'te çekmece ekranı yok; çekmece, Stitch kart/rozet/buton dilinden türetildi (raporda sapma).
+ */
+.notification-root {
+  --sf-lowest: #08100d;
+  --sf-low: #151d1a;
+  --sf: #19211e;
+  --sf-high: #232c28;
+  --sf-highest: #2e3733;
+  --sf-bright: #333b37;
+  --primary: #8dd6ae;
+  --primary-container: #0a5c3d;
+  --on-primary: #003823;
+  --secondary: #4ae176;
+  --on-secondary: #003915;
+  --on-surface: #dce5df;
+  --on-surface-variant: #bfc9c0;
+  --outline: #89938b;
+  --outline-variant: #3f4943;
+  --tertiary: #c1c7cf;
+  --amber: #e4b765;
+  --error: #ffb4ab;
+  --f-label: Chivo, Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-body: Outfit, Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  position: relative;
+  z-index: 40;
+}
+.notification-root *, .notification-root *::before, .notification-root *::after { box-sizing: border-box; }
+.notification-root .nc-glyph { flex: 0 0 auto; width: 1em; height: 1em; }
+
+/* Tetikleyici: Stitch w-11 h-11 rounded-xl bg-surface-container/60 */
+.notification-root .notification-trigger { position: relative; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: rgba(25,33,30,.6); color: var(--on-surface); font-size: 20px; cursor: pointer; transition: background .15s; }
+.notification-root .notification-trigger:hover, .notification-root .notification-trigger.active { background: var(--sf); color: var(--on-surface); border: 0; }
+.notification-root .notification-trigger:focus-visible, .notification-root button:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+.notification-root .notification-trigger b { position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; padding: 0 4px; display: grid; place-items: center; border: 0; border-radius: 12px; background: var(--secondary); color: var(--on-secondary); font: 800 10px/14px var(--f-label); letter-spacing: 0; }
+
+.notification-root .notification-scrim { position: fixed; inset: 0; z-index: 40; border: 0; background: rgba(8,16,13,.6); cursor: default; }
+
+/* Çekmece */
+.notification-root .notification-drawer { position: fixed; z-index: 41; top: 72px; right: 16px; left: auto; width: min(420px, calc(100vw - 32px)); max-height: min(720px, calc(100dvh - 88px)); display: flex; flex-direction: column; overflow: hidden; padding: 16px; border: 0; border-radius: 8px; background: var(--sf-high); color: var(--on-surface); font-family: var(--f-body); box-shadow: 0 25px 50px -12px rgba(0,0,0,.7); backdrop-filter: none; animation: nc-in .2s ease-out; }
+@keyframes nc-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.notification-root .notification-drawer-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 0 0 12px; border: 0; }
+.notification-root .notification-drawer-heading > div { display: flex; flex-direction: column; min-width: 0; }
+.notification-root .notification-drawer-heading .eyebrow { color: var(--primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; }
+.notification-root .notification-drawer-heading h3 { margin: 2px 0; color: var(--on-surface); font: 700 20px/26px var(--f-label); letter-spacing: 0; }
+.notification-root .notification-drawer-heading small { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.notification-root .notification-close { flex: 0 0 auto; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 8px; background: var(--sf-lowest); color: var(--on-surface-variant); font-size: 20px; cursor: pointer; }
+.notification-root .notification-close:hover { color: var(--on-surface); }
+
+/* Otomatik bildirim tercihi */
+.notification-root .push-preference { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--sf-lowest); }
+.notification-root .push-preference-copy { display: flex; flex-direction: column; min-width: 0; gap: 0; }
+.notification-root .push-preference-copy strong { color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-transform: uppercase; }
+.notification-root .push-preference-copy span { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); }
+.notification-root .push-toggle { flex: 0 0 auto; min-width: 88px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--primary-container); color: var(--on-primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.notification-root .push-toggle:hover:not(:disabled) { background: #0d6b47; }
+.notification-root .push-toggle.enabled { background: var(--sf-highest); color: var(--secondary); }
+.notification-root .push-toggle:disabled { opacity: .45; cursor: not-allowed; }
+.notification-root .notification-message { margin: 8px 0 0; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--primary-container); color: var(--on-surface); font: 500 12px/16px var(--f-body); }
+
+/* Liste */
+.notification-root .notification-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 12px 0 8px; padding: 0 4px; color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; }
+.notification-root .notification-list-heading button { min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--primary); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.notification-root .notification-list-heading button:hover:not(:disabled) { color: var(--secondary); }
+.notification-root .notification-list-heading button:disabled { opacity: .4; cursor: not-allowed; }
+.notification-root .notification-list { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.notification-root .notification-item { position: relative; width: 100%; min-height: 64px; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border: 0; border-radius: 8px; background: var(--sf); color: var(--on-surface); text-align: left; cursor: pointer; transition: background .15s; }
+.notification-root .notification-item:hover { background: var(--sf-low); }
+.notification-root .notification-item.unread { background: var(--sf-highest); }
+.notification-root .notification-item.read { opacity: .75; }
+.notification-root .notification-item-icon { flex: 0 0 40px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; background: var(--primary-container); color: var(--secondary); font-size: 20px; }
+.notification-root .notification-item-icon.type-match_reminder { background: var(--sf-lowest); color: var(--amber); }
+.notification-root .notification-item-icon.type-source_issue { background: #3a1f1d; color: var(--error); }
+.notification-root .notification-item-copy { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.notification-root .notification-item-copy strong { color: var(--on-surface); font: 600 14px/20px var(--f-body); overflow-wrap: anywhere; }
+.notification-root .notification-item-copy span { color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); overflow-wrap: anywhere; }
+.notification-root .notification-item-copy small { color: var(--outline); font: 800 10px/14px var(--f-label); letter-spacing: .08em; text-transform: uppercase; }
+.notification-root .notification-item i { flex: 0 0 8px; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: var(--secondary); box-shadow: none; }
+.notification-root .notification-empty { min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 16px; border-radius: 8px; background: var(--sf-low); color: var(--on-surface-variant); font: 400 12px/16px var(--f-body); text-align: center; }
+.notification-root .notification-empty > span { color: var(--secondary); font-size: 24px; display: grid; }
+.notification-root .notification-empty strong { color: var(--on-surface); font: 700 12px/16px var(--f-label); letter-spacing: .06em; text-transform: uppercase; }
+.notification-root .notification-empty p { max-width: 260px; margin: 0; color: var(--outline); font: 400 12px/16px var(--f-body); }
+.notification-root .notification-privacy { margin: 8px 0 0; padding: 8px 4px 0; border: 0; color: var(--outline); font: 400 12px/16px var(--f-body); }
+
+@media (max-width: 480px) {
+  .notification-root .notification-drawer { left: 16px; right: 16px; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notification-root .notification-drawer { animation: none; }
+  .notification-root * { transition: none !important; }
+}

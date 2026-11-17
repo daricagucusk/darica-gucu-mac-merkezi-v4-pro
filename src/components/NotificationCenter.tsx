@@ -5,6 +5,7 @@ import {
   enableBrowserPush,
   isBrowserPushSupported,
 } from '../notifications/push-client';
+import './notification-center.css';
 
 type NotificationItem = {
   id: string;
@@ -42,11 +43,31 @@ function timeLabel(value: string): string {
   }).format(date);
 }
 
-function notificationIcon(type: string): string {
-  if (type === 'askf_pending_review') return '⇅';
-  if (type === 'match_reminder') return '◷';
-  if (type === 'source_issue') return '!';
-  return '✓';
+type GlyphName = 'bell' | 'diff' | 'clock' | 'alert' | 'check' | 'close' | 'spark';
+
+const GLYPHS: Record<GlyphName, string> = {
+  bell: 'M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4',
+  diff: 'M7 4v14M3 14l4 4 4-4M17 20V6M13 10l4-4 4 4',
+  clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  alert: 'M12 4l9 16H3zM12 10v4M12 17h.01',
+  check: 'M5 12l5 5 9-10',
+  close: 'M6 6l12 12M18 6L6 18',
+  spark: 'M12 3l2.200 6.800L21 12l-6.800 2.200L12 21l-2.200-6.800L3 12l6.800-2.200z',
+};
+
+function Glyph({ name }: { name: GlyphName }) {
+  return (
+    <svg className="nc-glyph" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={GLYPHS[name]} />
+    </svg>
+  );
+}
+
+function notificationIcon(type: string): GlyphName {
+  if (type === 'askf_pending_review') return 'diff';
+  if (type === 'match_reminder') return 'clock';
+  if (type === 'source_issue') return 'alert';
+  return 'check';
 }
 
 export default function NotificationCenter({ onNavigate }: Props) {
@@ -151,17 +172,17 @@ export default function NotificationCenter({ onNavigate }: Props) {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <span aria-hidden="true">♢</span>
+        <Glyph name="bell" />
         {state.unreadCount > 0 && <b>{state.unreadCount > 9 ? '9+' : state.unreadCount}</b>}
       </button>
 
       {open && (
         <>
           <button type="button" className="notification-scrim" aria-label="Bildirim merkezini kapat" onClick={() => setOpen(false)}/>
-          <aside className="notification-drawer glass-card" aria-label="Bildirim merkezi">
+          <aside className="notification-drawer" aria-label="Bildirim merkezi">
             <div className="notification-drawer-heading">
               <div><span className="eyebrow">KULÜP GÜNDEMİ</span><h3>Bildirimler</h3><small>{state.unreadCount} okunmamış bildirim</small></div>
-              <button type="button" className="notification-close" onClick={() => setOpen(false)} aria-label="Kapat">×</button>
+              <button type="button" className="notification-close" onClick={() => setOpen(false)} aria-label="Kapat"><Glyph name="close" /></button>
             </div>
 
             <div className="push-preference">
@@ -182,11 +203,11 @@ export default function NotificationCenter({ onNavigate }: Props) {
             <div className="notification-list">
               {loading && <p className="notification-empty">Bildirimler yükleniyor…</p>}
               {!loading && state.notifications.length === 0 && (
-                <div className="notification-empty"><span>✦</span><strong>Şimdilik sessiz</strong><p>Yeni program, maç hatırlatması veya kaynak uyarısı burada görünecek.</p></div>
+                <div className="notification-empty"><span><Glyph name="spark" /></span><strong>Şimdilik sessiz</strong><p>Yeni program, maç hatırlatması veya kaynak uyarısı burada görünecek.</p></div>
               )}
               {state.notifications.map((item) => (
                 <button type="button" className={item.readAt ? 'notification-item read' : 'notification-item unread'} key={item.id} onClick={() => void openNotification(item)}>
-                  <span className={`notification-item-icon type-${item.type}`}>{notificationIcon(item.type)}</span>
+                  <span className={`notification-item-icon type-${item.type}`}><Glyph name={notificationIcon(item.type)} /></span>
                   <span className="notification-item-copy"><strong>{item.title}</strong><span>{item.body}</span><small>{timeLabel(item.createdAt)}</small></span>
                   {!item.readAt && <i aria-label="Okunmadı"/>}
                 </button>

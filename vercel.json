@@ -6,6 +6,11 @@
       "schedule": "0 15 * * *"
     }
   ],
+  "rewrites": [
+    { "source": "/api/players", "destination": "/api/media?resource=players" },
+    { "source": "/api/player-photo", "destination": "/api/media?resource=player-photo" },
+    { "source": "/api/weather", "destination": "/api/media?resource=weather" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

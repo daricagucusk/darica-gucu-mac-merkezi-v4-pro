@@ -8,9 +8,12 @@
     "build": "npm test && tsc -b && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "shots": "node scripts/stitch-shots.mjs"
   },
   "dependencies": {
+    "@fontsource/chivo": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@sparticuz/chromium": "^141.0.0",
     "@vercel/blob": "^2.9.0",

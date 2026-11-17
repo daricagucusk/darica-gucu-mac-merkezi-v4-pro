@@ -47,6 +47,13 @@ describe('service worker önbellek politikası', () => {
     }
   });
 
+  it('oyuncu verisi, oyuncu fotoğrafı ve hava uçlarını (alt yol/sorgu dahil) asla önbelleğe almaz', () => {
+    for (const path of ['/api/players', '/api/players?id=abc', '/api/player-photo?id=abc-123', '/api/weather?at=2026-11-20T12:00:00']) {
+      expect(get(path.split('?')[0])).toBe('network-only');
+    }
+    expect(get('/api/player-photo/extra')).toBe('network-only');
+  });
+
   it('POST ve başka kaynaklı istekleri önbelleğe almaz', () => {
     expect(policy(new URL('https://v4.example.com/api/live'), { method: 'POST' })).toBe('network-only');
     expect(policy(new URL('https://baska.example.com/assets/x.js'), { method: 'GET' })).toBe('network-only');
